@@ -118,45 +118,53 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Direct references to key elements
     const productRows = document.querySelectorAll('.product-row');
     const totalAmountElement = document.getElementById('total-amount');
     const completeSaleButton = document.getElementById('complete-sale-btn');
-    const registerSelect = document.getElementById('register_id');
-
-    function updateTotals() {
+    
+    // Simple function to update all calculations
+    function updateCalculations() {
         let total = 0;
+        let hasProducts = false;
+        
+        // Process each product row
         productRows.forEach(row => {
             const quantityInput = row.querySelector('.product-quantity');
             const subtotalElement = row.querySelector('.product-subtotal');
             const price = parseFloat(row.dataset.price);
             const quantity = parseInt(quantityInput.value) || 0;
-            const maxQuantity = parseInt(quantityInput.dataset.max);
-
-            // Validate quantity
-            if (quantity > maxQuantity) {
-                quantityInput.value = maxQuantity;
-                alert(`Maximum available quantity is ${maxQuantity}`);
-            }
-
+            
+            // Calculate and display subtotal
             const subtotal = price * quantity;
-            subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
+            subtotalElement.textContent = '$' + subtotal.toFixed(2);
+            
+            // Add to total
             total += subtotal;
+            
+            // Check if any products are selected
+            if (quantity > 0) {
+                hasProducts = true;
+            }
         });
-
-        totalAmountElement.textContent = `$${total.toFixed(2)}`;
         
-        // Enable the complete sale button only if we have a total > 0 AND a register selected
-        const registerSelected = registerSelect.value !== "";
-        completeSaleButton.disabled = total === 0 || !registerSelected;
+        // Update total display
+        totalAmountElement.textContent = '$' + total.toFixed(2);
+        
+        // Enable or disable complete button based on having products
+        completeSaleButton.disabled = !hasProducts;
     }
-
+    
+    // Add event listeners to quantity inputs
     productRows.forEach(row => {
         const quantityInput = row.querySelector('.product-quantity');
-        quantityInput.addEventListener('input', updateTotals);
+        quantityInput.addEventListener('change', updateCalculations);
+        quantityInput.addEventListener('input', updateCalculations);
+        quantityInput.addEventListener('keyup', updateCalculations);
     });
     
-    // Also update when register changes
-    registerSelect.addEventListener('change', updateTotals);
+    // Initial calculation
+    updateCalculations();
 });
 </script>
 @endpush

@@ -28,90 +28,96 @@ public function index()
 
     // Handle the checkout process
     public function checkout(Request $request)
-    {
-        $request->validate([
-            'products' => 'required|array',
-            'products.*.id' => 'exists:products,id',
-            'products.*.quantity' => 'required|integer|min:1',
-            'customer_name' => 'required|string',
-            'payment_method' => 'required|string|in:cash,credit_card,debit_card',
-            'register_id' => 'required|exists:registers,id',
-        ]);
-
-        try {
-            // Use a database transaction to ensure data integrity
-            return DB::transaction(function () use ($request) {
-                $register = Register::lockForUpdate()->findOrFail($request->register_id);
-                
-                // Verify register is open
-                if ($register->status !== 'open') {
-                    throw new \Exception("Register is not open for sales");
-                }
-
-                $totalAmount = 0;
-                $orderItems = [];
-
-                // Validate stock and prepare order items
-                foreach ($request->products as $productData) {
-                    $product = Product::lockForUpdate()->find($productData['id']);
-                    
-                    // Check if enough stock is available
-                    if ($product->stock_quantity < $productData['quantity']) {
-                        throw new \Exception("Insufficient stock for product: {$product->name}");
-                    }
-
-                    $itemTotal = $product->price * $productData['quantity'];
-                    $totalAmount += $itemTotal;
-
-                    // Prepare order items and update stock
-                    $orderItems[] = [
-                        'product_id' => $product->id,
-                        'quantity' => $productData['quantity'],
-                        'unit_price' => $product->price,
-                        'total_price' => $itemTotal,
-                    ];
-
-                    // Reduce stock quantity
-                    $product->decrement('stock_quantity', $productData['quantity']);
-
-                    // Optional: Check and trigger reorder if stock is low
-                    if ($product->stock_quantity <= $product->reorder_level) {
-                        // You could trigger a notification or reorder process here
-                        \Log::warning("Product {$product->name} is below reorder level");
-                    }
-                }
-
-                // Create the order
-                $order = Order::create([
-                    'customer_name' => $request->customer_name,
-                    'total_amount' => $totalAmount,
-                    'status' => 'completed',
-                    'payment_method' => $request->payment_method,
-                    'register_id' => $register->id,
-                    'cashier_id' => auth()->id(),
-                ]);
-
-                // Create order items
-                $order->items()->createMany($orderItems);
-
-                // Update register cash balance if payment is cash
-                if ($request->payment_method === 'cash') {
-                    $register->increment('cash_balance', $totalAmount);
-                }
-                
-                // Update register transaction count
-                $register->increment('transaction_count');
-
-                return redirect()->route('pos.index')
-                    ->with('success', 'Sale completed successfully on Register #' . $register->id . '. Total: $' . number_format($totalAmount, 2));
-            });
-        } catch (\Exception $e) {
-            // Rollback the transaction and return with an error
-            return redirect()->back()
-                ->with('error', $e->getMessage())
-                ->withInput();
+{
+    // First, filter out products with zero quantity
+    $filteredProducts = [];
+    foreach ($request->products as $key => $product) {
+        if (isset($product['quantity']) && (int)$product['quantity'] > 0) {
+            $filteredProducts[] = $product;
         }
     }
+    
+    // Replace products in request with filtered list
+    $request->merge(['products' => $filteredProducts]);
+    
+    // Now validate the filtered products
+    $request->validate([
+        'products' => 'required|array|min:1',
+        'products.*.id' => 'exists:products,id',
+        'products.*.quantity' => 'required|integer|min:1',
+        'customer_name' => 'required|string',
+        'payment_method' => 'required|string|in:cash,credit_card,debit_card',
+        'register_id' => 'required|exists:registers,id',
+    ]);
+
+    try {
+        // Use a database transaction to ensure data integrity
+        return DB::transaction(function () use ($request) {
+            $register = Register::lockForUpdate()->findOrFail($request->register_id);
+            
+            // Verify register is open
+            if ($register->status !== 'open') {
+                throw new \Exception("Register is not open for sales");
+            }
+
+            $totalAmount = 0;
+            $orderItems = [];
+
+            // Process each product
+            foreach ($request->products as $productData) {
+                $product = Product::lockForUpdate()->find($productData['id']);
+                
+                // Check if enough stock is available
+                if ($product->stock_quantity < $productData['quantity']) {
+                    throw new \Exception("Insufficient stock for product: {$product->name}");
+                }
+
+                $itemTotal = $product->price * $productData['quantity'];
+                $totalAmount += $itemTotal;
+
+                // Prepare order items and update stock
+                $orderItems[] = [
+                    'product_id' => $product->id,
+                    'quantity' => $productData['quantity'],
+                    'unit_price' => $product->price,
+                    'total_price' => $itemTotal,
+                ];
+
+                // Reduce stock quantity
+                $product->decrement('stock_quantity', $productData['quantity']);
+            }
+
+            // Create the order
+            $order = Order::create([
+                'customer_name' => $request->customer_name,
+                'total_amount' => $totalAmount,
+                'status' => 'completed',
+                'payment_method' => $request->payment_method,
+                'register_id' => $register->id,
+                'cashier_id' => auth()->id(),
+            ]);
+
+            // Create order items
+            $order->items()->createMany($orderItems);
+
+            // Update register cash balance if payment is cash
+            if ($request->payment_method === 'cash') {
+                $register->increment('cash_balance', $totalAmount);
+            }
+            
+            // Update register transaction count
+            $register->increment('transaction_count');
+
+            return redirect()->route('pos.index')
+                ->with('success', 'Sale completed successfully! Total: $' . number_format($totalAmount, 2));
+        });
+    } catch (\Exception $e) {
+        // Rollback the transaction and return with an error
+        return redirect()->back()
+            ->with('error', 'Error: ' . $e->getMessage())
+            ->withInput();
+    }
+}
 
     // Method to show recent sales
     public function salesHistory()
