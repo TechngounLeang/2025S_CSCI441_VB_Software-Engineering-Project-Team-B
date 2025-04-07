@@ -28,9 +28,9 @@
                             <input type="text" class="form-control" id="register_name" name="register_name" required>
                         </div>
                         <div class="mb-3">
-                            <label for="register_location" class="form-label">Location</label>
-                            <input type="text" class="form-control" id="register_location" name="register_location">
-                        </div>
+    <label for="location" class="form-label">Location</label>
+    <input type="text" class="form-control" id="location" name="location">
+</div>
                         <button type="submit" class="btn btn-primary">Create Register</button>
                     </form>
                 </div>
@@ -47,11 +47,9 @@
                             <label for="register_id" class="form-label">Select Register</label>
                             <select class="form-control" id="register_id" name="register_id" required>
     <option value="">Select Register</option>
-    @foreach($registers as $register)
-        <option value="{{ $register->id }}" 
-                @if($register->status !== 'open') disabled @endif>
+    @foreach($registers->where('status', 'closed') as $register)
+        <option value="{{ $register->id }}">
             Register #{{ $register->id }} ({{ $register->name }})
-            @if($register->status !== 'open') - [CLOSED] @endif
         </option>
     @endforeach
 </select>

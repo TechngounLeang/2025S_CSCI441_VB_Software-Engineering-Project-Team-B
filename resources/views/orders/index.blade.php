@@ -2,20 +2,31 @@
 
 @section('content')
 <div class="container">
-    <h1>Order History</h1>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>{{ __('messages.order_history') }}</h1>
+        <a href="{{ route('orders.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> {{ __('messages.create_new_order') }}
+        </a>
+    </div>
+
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
 
     @if ($orders->isEmpty())
-        <p>No orders found.</p>
+        <p>{{ __('messages.no_orders_found') }}</p>
     @else
         <table class="table mt-3">
             <thead>
                 <tr>
-                    <th>Order ID</th>
-                    <th>Customer Name</th>
-                    <th>Total Amount</th>
-                    <th>Status</th>
-                    <th>Payment Method</th>
-                    <th>Actions</th>
+                    <th>{{ __('messages.order_id') }}</th>
+                    <th>{{ __('messages.customer_name') }}</th>
+                    <th>{{ __('messages.total_amount') }}</th>
+                    <th>{{ __('messages.status') }}</th>
+                    <th>{{ __('messages.payment_method') }}</th>
+                    <th>{{ __('messages.actions') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -24,16 +35,28 @@
                         <td>{{ $order->id }}</td>
                         <td>{{ $order->customer_name }}</td>
                         <td>${{ number_format($order->total_amount, 2) }}</td>
-                        <td>{{ $order->status }}</td>
-                        <td>{{ ucfirst($order->payment_method) }}</td>
                         <td>
-                            <!-- You can add edit or show actions if needed -->
-                            <a href="#" class="btn btn-info">View</a>
+                            <span class="badge 
+                                @switch($order->status)
+                                    @case('pending') bg-warning @break
+                                    @case('completed') bg-success @break
+                                    @case('cancelled') bg-danger @break
+                                    @default bg-secondary
+                                @endswitch
+                            ">
+                                {{ __('messages.' . $order->status) }}
+                            </span>
+                        </td>
+                        <td>{{ $order->payment_method ? __('messages.' . $order->payment_method) : __('messages.not_specified') }}</td>
+                        <td>
+                            <a href="{{ route('orders.show', $order) }}" class="btn btn-sm btn-info">{{ __('messages.view') }}</a>
                         </td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
+
+        {{ $orders->links() }}
     @endif
 </div>
 @endsection

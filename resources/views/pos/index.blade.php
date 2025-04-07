@@ -64,43 +64,47 @@
                     <div class="card-header">Product Selection</div>
                     <div class="card-body">
                         <div id="products-container">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Product</th>
-                                        <th>Price</th>
-                                        <th>Quantity</th>
-                                        <th>Subtotal</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($products as $product)
-                                    <tr class="product-row" data-product-id="{{ $product->id }}" data-price="{{ $product->price }}">
-                                        <td>
-                                            {{ $product->name }}
-                                            <input type="hidden" name="products[{{ $loop->index }}][id]" value="{{ $product->id }}">
-                                        </td>
-                                        <td>${{ number_format($product->price, 2) }}</td>
-                                        <td>
-                                            <input type="number" 
-                                                   class="form-control product-quantity" 
-                                                   name="products[{{ $loop->index }}][quantity]" 
-                                                   min="0" 
-                                                   max="{{ $product->stock_quantity }}"
-                                                   data-max="{{ $product->stock_quantity }}"
-                                                   placeholder="Qty">
-                                        </td>
-                                        <td class="product-subtotal">$0.00</td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td colspan="3" class="text-right"><strong>Total:</strong></td>
-                                        <td id="total-amount">$0.00</td>
-                                    </tr>
-                                </tfoot>
-                            </table>
+                        <table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach($products as $product)
+        <tr class="product-row" 
+            data-product-id="{{ $product->id }}" 
+            data-price="{{ $product->price }}">
+            <td>
+                {{ $product->name }}
+                <input type="hidden" 
+                       name="products[{{ $loop->index }}][id]" 
+                       value="{{ $product->id }}">
+            </td>
+            <td>${{ number_format($product->price, 2) }}</td>
+            <td>
+                <input type="number" 
+                       class="form-control product-quantity" 
+                       name="products[{{ $loop->index }}][quantity]" 
+                       min="0" 
+                       max="{{ $product->stock_quantity }}"
+                       data-max="{{ $product->stock_quantity }}"
+                       placeholder="Qty">
+            </td>
+            <td class="product-subtotal">$0.00</td>
+        </tr>
+        @endforeach
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="3" class="text-right"><strong>Total:</strong></td>
+            <td id="total-amount">$0.00</td>
+        </tr>
+    </tfoot>
+</table>
                         </div>
                     </div>
                 </div>
@@ -118,53 +122,96 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Direct references to key elements
     const productRows = document.querySelectorAll('.product-row');
     const totalAmountElement = document.getElementById('total-amount');
     const completeSaleButton = document.getElementById('complete-sale-btn');
-    
-    // Simple function to update all calculations
-    function updateCalculations() {
+    const registerSelect = document.getElementById('register_id');
+    const customerNameInput = document.getElementById('customer_name');
+    const paymentMethodSelect = document.getElementById('payment_method');
+    const posForm = document.getElementById('pos-form');
+
+    function calculateSubtotals() {
         let total = 0;
-        let hasProducts = false;
-        
-        // Process each product row
+        let hasValidProducts = false;
+
         productRows.forEach(row => {
             const quantityInput = row.querySelector('.product-quantity');
             const subtotalElement = row.querySelector('.product-subtotal');
             const price = parseFloat(row.dataset.price);
-            const quantity = parseInt(quantityInput.value) || 0;
+            const maxQuantity = parseInt(row.querySelector('.product-quantity').dataset.max);
             
-            // Calculate and display subtotal
+            // Ensure quantity is a number, default to 0
+            const quantity = Math.min(
+                parseInt(quantityInput.value || 0) || 0, 
+                maxQuantity
+            );
+
+            // Calculate subtotal
             const subtotal = price * quantity;
+            
+            // Update subtotal display
             subtotalElement.textContent = '$' + subtotal.toFixed(2);
             
             // Add to total
             total += subtotal;
             
-            // Check if any products are selected
+            // Check if any valid products are selected
             if (quantity > 0) {
-                hasProducts = true;
+                hasValidProducts = true;
             }
         });
-        
-        // Update total display
+
+        // Update total amount
         totalAmountElement.textContent = '$' + total.toFixed(2);
-        
-        // Enable or disable complete button based on having products
-        completeSaleButton.disabled = !hasProducts;
+
+        return hasValidProducts;
     }
-    
+
+    function validateSaleCompletion() {
+        const hasProducts = calculateSubtotals();
+        const registerSelected = registerSelect.value !== '';
+        const customerNameEntered = customerNameInput.value.trim() !== '';
+        const paymentMethodSelected = paymentMethodSelect.value !== '';
+
+        // Enable/disable complete sale button based on all conditions
+        completeSaleButton.disabled = !(
+            hasProducts && 
+            registerSelected && 
+            customerNameEntered && 
+            paymentMethodSelected
+        );
+    }
+
     // Add event listeners to quantity inputs
     productRows.forEach(row => {
         const quantityInput = row.querySelector('.product-quantity');
-        quantityInput.addEventListener('change', updateCalculations);
-        quantityInput.addEventListener('input', updateCalculations);
-        quantityInput.addEventListener('keyup', updateCalculations);
+        quantityInput.addEventListener('input', () => {
+            calculateSubtotals();
+            validateSaleCompletion();
+        });
     });
-    
-    // Initial calculation
-    updateCalculations();
+
+    // Add event listeners to other form elements
+    registerSelect.addEventListener('change', validateSaleCompletion);
+    customerNameInput.addEventListener('input', validateSaleCompletion);
+    paymentMethodSelect.addEventListener('change', validateSaleCompletion);
+
+    // Initial calculations
+    calculateSubtotals();
+    validateSaleCompletion();
+
+    // Form submission validation
+    posForm.addEventListener('submit', function(event) {
+        const hasProducts = calculateSubtotals();
+        const registerSelected = registerSelect.value !== '';
+        const customerNameEntered = customerNameInput.value.trim() !== '';
+        const paymentMethodSelected = paymentMethodSelect.value !== '';
+
+        if (!(hasProducts && registerSelected && customerNameEntered && paymentMethodSelected)) {
+            event.preventDefault();
+            alert('Please complete all required fields and select at least one product.');
+        }
+    });
 });
 </script>
 @endpush

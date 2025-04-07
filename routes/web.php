@@ -30,7 +30,6 @@ Route::middleware('auth')->group(function () {
     Route::resource('categories', CategoryController::class);
     Route::resource('sales', SalesController::class);
     Route::resource('orders', OrderController::class);
-    Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
     
     // POS Routes
     Route::get('pos', [POSController::class, 'index'])->name('pos.index');
@@ -43,6 +42,8 @@ Route::middleware('auth')->group(function () {
     Route::get('registers/sales', [POSController::class, 'registerSales'])->name('pos.register-sales');
 
     // Add these to your routes/web.php file
+    Route::get('lang/{lang}', [App\Http\Controllers\LanguageController::class, 'switchLanguage'])->name('lang.switch');
+
 
 // Create register
 Route::post('/pos/create-register', [POSController::class, 'createRegister'])->name('pos.create-register');
