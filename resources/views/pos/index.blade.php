@@ -1,6 +1,40 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+/* Overlay styles */
+.receipt-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto;
+    padding: 30px;
+}
+
+.receipt-container {
+    background-color: white;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
 <div class="container">
     <h1>Point of Sale (POS) System</h1>
 
@@ -107,71 +141,74 @@
             </div>
         </div>
 
-        <!-- Receipt Section (initially hidden) -->
-        <div id="receipt-section" class="my-4 d-none">
-            <div class="card border-success">
-                <div class="card-header bg-success text-white">
-                    <h4 class="mb-0">Purchase Receipt</h4>
-                </div>
-                <div class="card-body">
-                    <div id="receipt-content" class="p-3">
-                        <div class="text-center mb-4">
-                            <h4>Store Name</h4>
-                            <p>123 Main Street, City, State 12345</p>
-                            <p>Phone: (123) 456-7890</p>
-                            <p class="mb-3">Receipt #<span id="receipt-number"></span></p>
-                            <p>Date: <span id="receipt-date"></span></p>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <p><strong>Register:</strong> <span id="receipt-register"></span></p>
-                            <p><strong>Customer:</strong> <span id="receipt-customer"></span></p>
-                            <p><strong>Payment Method:</strong> <span id="receipt-payment"></span></p>
-                        </div>
-                        
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Item</th>
-                                    <th>Price</th>
-                                    <th>Qty</th>
-                                    <th>Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody id="receipt-items">
-                                <!-- Items will be added here dynamically -->
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                                    <td id="receipt-total"></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                        
-                        <div class="text-center mt-4">
-                            <p>Thank you for your purchase!</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <div class="d-flex justify-content-between">
-                        <button type="button" class="btn btn-secondary" id="back-to-sale">Back to Sale</button>
-                        <div>
-                            <button type="button" class="btn btn-primary me-2" id="print-receipt">Print Receipt</button>
-                            <button type="submit" class="btn btn-success" id="confirm-sale">Confirm & Submit</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div id="sale-buttons" class="text-center mt-3">
             <button type="button" class="btn btn-primary btn-lg" id="complete-sale-btn" disabled>
                 Complete Sale
             </button>
         </div>
     </form>
+</div>
+
+<!-- Receipt Overlay -->
+<div class="receipt-overlay" id="receipt-overlay">
+    <div class="receipt-container">
+        <div class="card border-success mb-0">
+            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Purchase Receipt</h4>
+                <button type="button" class="btn-close btn-close-white" id="close-receipt" aria-label="Close"></button>
+            </div>
+            <div class="card-body">
+                <div id="receipt-content" class="p-3">
+                    <div class="text-center mb-4">
+                        <h4>Store Name</h4>
+                        <p>123 Main Street, City, State 12345</p>
+                        <p>Phone: (123) 456-7890</p>
+                        <p class="mb-3">Receipt #<span id="receipt-number"></span></p>
+                        <p>Date: <span id="receipt-date"></span></p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <p><strong>Register:</strong> <span id="receipt-register"></span></p>
+                        <p><strong>Customer:</strong> <span id="receipt-customer"></span></p>
+                        <p><strong>Payment Method:</strong> <span id="receipt-payment"></span></p>
+                    </div>
+                    
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Price</th>
+                                <th>Qty</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="receipt-items">
+                            <!-- Items will be added here dynamically -->
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                <td id="receipt-total"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    
+                    <div class="text-center mt-4">
+                        <p>Thank you for your purchase!</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="d-flex justify-content-between">
+                    <button type="button" class="btn btn-secondary" id="back-to-sale">Back to Sale</button>
+                    <div>
+                        <button type="button" class="btn btn-primary me-2" id="print-receipt">Print Receipt</button>
+                        <button type="button" class="btn btn-success" id="confirm-sale">Confirm & Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 @push('scripts')
@@ -184,10 +221,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const totalAmountElement = document.getElementById('total-amount');
     const completeSaleButton = document.getElementById('complete-sale-btn');
     const posForm = document.getElementById('pos-form');
-    const receiptSection = document.getElementById('receipt-section');
-    const saleButtonsSection = document.getElementById('sale-buttons');
+    const receiptOverlay = document.getElementById('receipt-overlay');
     
-    if (!productRows.length || !totalAmountElement || !completeSaleButton || !posForm || !receiptSection) {
+    if (!productRows.length || !totalAmountElement || !completeSaleButton || !posForm || !receiptOverlay) {
         console.error('Required DOM elements not found');
         return;
     }
@@ -251,19 +287,35 @@ document.addEventListener('DOMContentLoaded', function() {
         // Generate receipt
         generateReceipt();
         
-        // Hide sale buttons, show receipt section
-        saleButtonsSection.classList.add('d-none');
-        receiptSection.classList.remove('d-none');
+        // Show receipt overlay with flex display for centering
+        receiptOverlay.style.display = 'flex';
         
-        // Scroll to receipt
-        receiptSection.scrollIntoView({ behavior: 'smooth' });
+        // Disable scrolling on the body
+        document.body.style.overflow = 'hidden';
     });
     
     // Back to sale button
     document.getElementById('back-to-sale').addEventListener('click', function() {
-        receiptSection.classList.add('d-none');
-        saleButtonsSection.classList.remove('d-none');
+        hideReceiptOverlay();
     });
+    
+    // Close button
+    document.getElementById('close-receipt').addEventListener('click', function() {
+        hideReceiptOverlay();
+    });
+    
+    // Click outside to close
+    receiptOverlay.addEventListener('click', function(e) {
+        if (e.target === receiptOverlay) {
+            hideReceiptOverlay();
+        }
+    });
+    
+    // Function to hide receipt overlay
+    function hideReceiptOverlay() {
+        receiptOverlay.style.display = 'none';
+        document.body.style.overflow = '';
+    }
     
     // Function to generate receipt
     function generateReceipt() {
@@ -339,6 +391,12 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             printWindow.print();
         }, 500);
+    });
+    
+    // Confirm sale button - submit the form
+    document.getElementById('confirm-sale').addEventListener('click', function() {
+        hideReceiptOverlay();
+        posForm.submit();
     });
     
     // Initial calculation
