@@ -142,20 +142,33 @@ public function createRegister(Request $request)
 {
     $request->validate([
         'register_name' => 'required|string|max:255|unique:registers,name',
-        'location' => 'nullable|string|max:255'
+        'location' => 'nullable|string|max:255',
+        'initial_status' => 'nullable|string|in:open,closed'  // Add option to set initial status
     ]);
 
     try {
-        $register = Register::create([
+        // Set default status based on request or default to 'closed' if not specified
+        $status = $request->initial_status ?? 'closed';
+        
+        $registerData = [
             'name' => $request->register_name,
             'location' => $request->location,
-            'status' => 'closed',
+            'status' => $status,
             'cash_balance' => 0,
             'transaction_count' => 0
-        ]);
+        ];
+        
+        // If opening the register immediately, set additional fields
+        if ($status === 'open') {
+            $registerData['opened_at'] = now();
+            $registerData['opened_by'] = auth()->id();
+        }
+
+        $register = Register::create($registerData);
 
         return redirect()->route('pos.registers')
-            ->with('success', 'Register created successfully!');
+            ->with('success', "Register created successfully!" . 
+                ($status === 'open' ? " Register is now open." : " Register is currently closed."));
 
     } catch (\Exception $e) {
         return redirect()->back()
