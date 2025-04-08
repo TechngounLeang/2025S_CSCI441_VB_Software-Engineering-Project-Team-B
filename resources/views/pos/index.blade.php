@@ -118,26 +118,42 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded - setting up POS functionality');
+    
     // Direct references to key elements
     const productRows = document.querySelectorAll('.product-row');
     const totalAmountElement = document.getElementById('total-amount');
     const completeSaleButton = document.getElementById('complete-sale-btn');
     
+    if (!productRows.length || !totalAmountElement || !completeSaleButton) {
+        console.error('Required DOM elements not found');
+        return;
+    }
+    
     // Simple function to update all calculations
     function updateCalculations() {
+        console.log('Updating calculations...');
         let total = 0;
         let hasProducts = false;
         
         // Process each product row
-        productRows.forEach(row => {
+        productRows.forEach((row, index) => {
             const quantityInput = row.querySelector('.product-quantity');
             const subtotalElement = row.querySelector('.product-subtotal');
-            const price = parseFloat(row.dataset.price);
+            
+            if (!quantityInput || !subtotalElement) {
+                console.error(`Missing elements in row ${index}`);
+                return;
+            }
+            
+            const price = parseFloat(row.dataset.price) || 0;
             const quantity = parseInt(quantityInput.value) || 0;
+            console.log(`Row ${index}: price=${price}, quantity=${quantity}`);
             
             // Calculate and display subtotal
             const subtotal = price * quantity;
             subtotalElement.textContent = '$' + subtotal.toFixed(2);
+            console.log(`Row ${index}: subtotal=${subtotal}`);
             
             // Add to total
             total += subtotal;
@@ -150,20 +166,24 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Update total display
         totalAmountElement.textContent = '$' + total.toFixed(2);
+        console.log(`Total: ${total}, Has Products: ${hasProducts}`);
         
         // Enable or disable complete button based on having products
         completeSaleButton.disabled = !hasProducts;
     }
     
     // Add event listeners to quantity inputs
-    productRows.forEach(row => {
+    productRows.forEach((row, index) => {
         const quantityInput = row.querySelector('.product-quantity');
-        quantityInput.addEventListener('change', updateCalculations);
-        quantityInput.addEventListener('input', updateCalculations);
-        quantityInput.addEventListener('keyup', updateCalculations);
+        if (quantityInput) {
+            console.log(`Adding listeners to row ${index}`);
+            quantityInput.addEventListener('change', updateCalculations);
+            quantityInput.addEventListener('input', updateCalculations);
+        }
     });
     
     // Initial calculation
+    console.log('Running initial calculation');
     updateCalculations();
 });
 </script>
