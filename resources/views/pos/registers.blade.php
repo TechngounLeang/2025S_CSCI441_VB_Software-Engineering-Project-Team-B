@@ -23,13 +23,22 @@
                 <div class="card-body">
                     <form action="{{ route('pos.create-register') }}" method="POST">
                         @csrf
-                        <div class="mb-3">
-                            <label for="register_name" class="form-label">Register Name</label>
+                        <div class="form-group mb-3">
+                            <label for="register_name">Register Name</label>
                             <input type="text" class="form-control" id="register_name" name="register_name" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="register_location" class="form-label">Location</label>
-                            <input type="text" class="form-control" id="register_location" name="register_location">
+
+                        <div class="form-group mb-3">
+                            <label for="location">Location (Optional)</label>
+                            <input type="text" class="form-control" id="location" name="location">
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="initial_status">Initial Status</label>
+                            <select class="form-control" id="initial_status" name="initial_status">
+                                <option value="closed">Closed</option>
+                                <option value="open">Open (will be opened immediately)</option>
+                            </select>
                         </div>
                         <button type="submit" class="btn btn-primary">Create Register</button>
                     </form>
