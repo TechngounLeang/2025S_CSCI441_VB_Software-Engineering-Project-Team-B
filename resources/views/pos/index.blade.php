@@ -107,8 +107,67 @@
             </div>
         </div>
 
-        <div class="text-center mt-3">
-            <button type="submit" class="btn btn-primary btn-lg" id="complete-sale-btn" disabled>
+        <!-- Receipt Section (initially hidden) -->
+        <div id="receipt-section" class="my-4 d-none">
+            <div class="card border-success">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Purchase Receipt</h4>
+                </div>
+                <div class="card-body">
+                    <div id="receipt-content" class="p-3">
+                        <div class="text-center mb-4">
+                            <h4>Store Name</h4>
+                            <p>123 Main Street, City, State 12345</p>
+                            <p>Phone: (123) 456-7890</p>
+                            <p class="mb-3">Receipt #<span id="receipt-number"></span></p>
+                            <p>Date: <span id="receipt-date"></span></p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <p><strong>Register:</strong> <span id="receipt-register"></span></p>
+                            <p><strong>Customer:</strong> <span id="receipt-customer"></span></p>
+                            <p><strong>Payment Method:</strong> <span id="receipt-payment"></span></p>
+                        </div>
+                        
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Price</th>
+                                    <th>Qty</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="receipt-items">
+                                <!-- Items will be added here dynamically -->
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                    <td id="receipt-total"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        
+                        <div class="text-center mt-4">
+                            <p>Thank you for your purchase!</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-secondary" id="back-to-sale">Back to Sale</button>
+                        <div>
+                            <button type="button" class="btn btn-primary me-2" id="print-receipt">Print Receipt</button>
+                            <button type="submit" class="btn btn-success" id="confirm-sale">Confirm & Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="sale-buttons" class="text-center mt-3">
+            <button type="button" class="btn btn-primary btn-lg" id="complete-sale-btn" disabled>
                 Complete Sale
             </button>
         </div>
@@ -124,8 +183,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const productRows = document.querySelectorAll('.product-row');
     const totalAmountElement = document.getElementById('total-amount');
     const completeSaleButton = document.getElementById('complete-sale-btn');
+    const posForm = document.getElementById('pos-form');
+    const receiptSection = document.getElementById('receipt-section');
+    const saleButtonsSection = document.getElementById('sale-buttons');
     
-    if (!productRows.length || !totalAmountElement || !completeSaleButton) {
+    if (!productRows.length || !totalAmountElement || !completeSaleButton || !posForm || !receiptSection) {
         console.error('Required DOM elements not found');
         return;
     }
@@ -180,6 +242,103 @@ document.addEventListener('DOMContentLoaded', function() {
             quantityInput.addEventListener('change', updateCalculations);
             quantityInput.addEventListener('input', updateCalculations);
         }
+    });
+    
+    // Receipt generation functionality
+    completeSaleButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Generate receipt
+        generateReceipt();
+        
+        // Hide sale buttons, show receipt section
+        saleButtonsSection.classList.add('d-none');
+        receiptSection.classList.remove('d-none');
+        
+        // Scroll to receipt
+        receiptSection.scrollIntoView({ behavior: 'smooth' });
+    });
+    
+    // Back to sale button
+    document.getElementById('back-to-sale').addEventListener('click', function() {
+        receiptSection.classList.add('d-none');
+        saleButtonsSection.classList.remove('d-none');
+    });
+    
+    // Function to generate receipt
+    function generateReceipt() {
+        console.log('Generating receipt...');
+        
+        // Get form data
+        const registerSelect = document.getElementById('register_id');
+        const registerText = registerSelect.options[registerSelect.selectedIndex].text;
+        const customerName = document.getElementById('customer_name').value;
+        const paymentMethodSelect = document.getElementById('payment_method');
+        const paymentMethod = paymentMethodSelect.options[paymentMethodSelect.selectedIndex].text;
+        
+        // Populate receipt header
+        document.getElementById('receipt-number').textContent = 'INV-' + Math.floor(Math.random() * 10000);
+        document.getElementById('receipt-date').textContent = new Date().toLocaleString();
+        document.getElementById('receipt-register').textContent = registerText;
+        document.getElementById('receipt-customer').textContent = customerName;
+        document.getElementById('receipt-payment').textContent = paymentMethod;
+        
+        // Clear previous items
+        const receiptItemsContainer = document.getElementById('receipt-items');
+        receiptItemsContainer.innerHTML = '';
+        
+        // Add purchased items to receipt
+        let totalAmount = 0;
+        
+        productRows.forEach(row => {
+            const quantity = parseInt(row.querySelector('.product-quantity').value) || 0;
+            
+            if (quantity > 0) {
+                const productName = row.querySelector('td:first-child').textContent.trim();
+                const price = parseFloat(row.dataset.price);
+                const subtotal = price * quantity;
+                totalAmount += subtotal;
+                
+                // Create row for receipt
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${productName}</td>
+                    <td>$${price.toFixed(2)}</td>
+                    <td>${quantity}</td>
+                    <td>$${subtotal.toFixed(2)}</td>
+                `;
+                receiptItemsContainer.appendChild(tr);
+            }
+        });
+        
+        // Update total on receipt
+        document.getElementById('receipt-total').textContent = '$' + totalAmount.toFixed(2);
+    }
+    
+    // Print receipt button
+    document.getElementById('print-receipt').addEventListener('click', function() {
+        const receiptContent = document.getElementById('receipt-content').innerHTML;
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>Print Receipt</title>
+                    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        ${receiptContent}
+                    </div>
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
+        setTimeout(() => {
+            printWindow.print();
+        }, 500);
     });
     
     // Initial calculation
