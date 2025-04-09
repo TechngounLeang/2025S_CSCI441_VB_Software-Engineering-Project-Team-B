@@ -521,6 +521,29 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initial calculation
     console.log('Running initial calculation');
     updateCalculations();
+
+    // Add this near the beginning of your DOMContentLoaded function
+    const registerSelect = document.getElementById('register_id');
+
+    // Load the previously selected register from localStorage
+    if (registerSelect) {
+        const savedRegisterId = localStorage.getItem('selectedRegisterId');
+        if (savedRegisterId) {
+            // Find the option with the saved value and select it
+            const options = registerSelect.options;
+            for (let i = 0; i < options.length; i++) {
+                if (options[i].value === savedRegisterId) {
+                    registerSelect.selectedIndex = i;
+                    break;
+                }
+            }
+        }
+        
+        // Save the selection when it changes
+        registerSelect.addEventListener('change', function() {
+            localStorage.setItem('selectedRegisterId', this.value);
+        });
+    }
 });
 </script>
 @endpush
