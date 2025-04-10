@@ -30,4 +30,5 @@ return [
     'product_name'    => 'ឈ្មោះផលិតផល',
     'select_category' => 'ជ្រើសប្រភេទ',
     'create_product'     => 'បង្កើតផលិតផល',
+    'create_products'     => 'បង្កើតផលិតផល'
 ];
