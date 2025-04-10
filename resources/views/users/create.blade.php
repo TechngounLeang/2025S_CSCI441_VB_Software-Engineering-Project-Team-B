@@ -2,26 +2,26 @@
 
 @section('content')
 <div class="container">
-    <h2>Create User</h2>
+    <h2>{{ __('app.create_user') }}</h2>
     <form method="POST" action="{{ route('users.store') }}">
         @csrf
         <div class="mb-3">
-            <label>Name</label>
+            <label>{{ __('app.name') }}</label>
             <input type="text" name="name" class="form-control" required>
         </div>
         <div class="mb-3">
-            <label>Email</label>
+            <label>{{ __('app.email') }}</label>
             <input type="email" name="email" class="form-control" required>
         </div>
         <div class="mb-3">
-            <label>Password</label>
+            <label>{{ __('app.password') }}</label>
             <input type="password" name="password" class="form-control" required>
         </div>
         <div class="mb-3">
-            <label>Confirm Password</label>
+            <label>{{ __('app.confirm_password') }}</label>
             <input type="password" name="password_confirmation" class="form-control" required>
         </div>
-        <button type="submit" class="btn btn-success">Create</button>
+        <button type="submit" class="btn btn-success">{{ __('app.create') }}</button>
     </form>
 </div>
 @endsection

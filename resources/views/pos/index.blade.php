@@ -75,7 +75,7 @@
 </style>
 
 <div class="container">
-    <h1>Point of Sale (POS) System</h1>
+    <h1>{{ __('app.point_of_sale_system') }}</h1>
 
     @if (session('error'))
     <div class="alert alert-danger">
@@ -95,23 +95,23 @@
         <div class="row mb-4">
             <div class="col-md-6">
                 <div class="card h-100">
-                    <div class="card-header">Transaction Information</div>
+                    <div class="card-header">{{ __('app.transaction_information') }}</div>
                     <div class="card-body">
                         <div class="mb-3">
-                            <label for="register_id" class="form-label">Select Register</label>
+                            <label for="register_id" class="form-label">{{ __('app.select_register') }}</label>
                             <select class="form-control" id="register_id" name="register_id" required>
-                                <option value="">Select Register</option>
+                                <option value="">{{ __('app.select_register') }}</option>
                                 @foreach($registers as $register)
-                                <option value="{{ $register->id }}">Register #{{ $register->id }} ({{ $register->name }})</option>
+                                <option value="{{ $register->id }}">{{ __('app.register') }} #{{ $register->id }} ({{ $register->name }})</option>
                                 @endforeach
                             </select>
                             <div class="form-text">
-                                <a href="{{ route('pos.registers') }}">Manage Registers</a>
+                                <a href="{{ route('pos.registers') }}">{{ __('app.manage_registers') }}</a>
                             </div>
                         </div>
                         
                         <div class="mb-0">
-                            <label for="customer_name" class="form-label">Customer Name</label>
+                            <label for="customer_name" class="form-label">{{ __('app.customer_name') }}</label>
                             <input type="text" class="form-control" id="customer_name" name="customer_name" required>
                         </div>
                     </div>
@@ -120,15 +120,15 @@
 
             <div class="col-md-6">
                 <div class="card h-100">
-                    <div class="card-header">Payment Details</div>
+                    <div class="card-header">{{ __('app.payment_details') }}</div>
                     <div class="card-body">
                         <div class="mb-3">
-                            <label for="payment_method" class="form-label">Payment Method</label>
+                            <label for="payment_method" class="form-label">{{ __('app.payment_method') }}</label>
                             <select class="form-control" id="payment_method" name="payment_method" required>
-                                <option value="">Select Payment Method</option>
-                                <option value="cash">Cash</option>
-                                <option value="credit_card">Credit Card</option>
-                                <option value="debit_card">Debit Card</option>
+                                <option value="">{{ __('app.select_payment_method') }}</option>
+                                <option value="cash">{{ __('app.cash') }}</option>
+                                <option value="credit_card">{{ __('app.credit_card') }}</option>
+                                <option value="debit_card">{{ __('app.debit_card') }}</option>
                             </select>
                         </div>
                     </div>
@@ -141,7 +141,7 @@
             <!-- Product Selection (70%) -->
             <div class="col-lg-8">
                 <div class="card mb-4">
-                    <div class="card-header">Product Selection</div>
+                    <div class="card-header">{{ __('app.product_selection') }}</div>
                     <div class="card-body product-selection">
                         <div id="products-container">
                             <div class="row">
@@ -163,7 +163,7 @@
                                                        min="0" 
                                                        max="{{ $product->stock_quantity }}"
                                                        data-max="{{ $product->stock_quantity }}"
-                                                       placeholder="Qty">
+                                                       placeholder="{{ __('app.quantity') }}">
                                                 <input type="hidden" name="products[{{ $loop->index }}][id]" value="{{ $product->id }}">
                                             </div>
                                             <div class="product-subtotal text-end mt-1">$0.00</div>
@@ -181,33 +181,33 @@
             <div class="col-lg-4">
                 <div class="card order-summary mb-4">
                     <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">Order Summary</h5>
+                        <h5 class="mb-0">{{ __('app.order_summary') }}</h5>
                     </div>
                     <div class="card-body">
                         <div id="order-items" class="mb-3">
                             <!-- Order items will be displayed here dynamically -->
                             <div class="text-center text-muted py-4" id="empty-cart-message">
                                 <i class="fas fa-shopping-cart mb-2" style="font-size: 24px;"></i>
-                                <p>No items added yet</p>
+                                <p>{{ __('app.no_items_added_yet') }}</p>
                             </div>
                         </div>
                         <hr>
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span>Subtotal:</span>
+                            <span>{{ __('app.subtotal') }}:</span>
                             <span id="subtotal-amount">$0.00</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span>Tax (8%):</span>
+                            <span>{{ __('app.tax') }} (8%):</span>
                             <span id="tax-amount">$0.00</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">Total:</h5>
+                            <h5 class="mb-0">{{ __('app.total') }}:</h5>
                             <h5 class="mb-0" id="total-amount">$0.00</h5>
                         </div>
                     </div>
                     <div class="card-footer">
                         <button type="button" class="btn btn-primary btn-lg w-100" id="complete-sale-btn" disabled>
-                            Complete Sale
+                            {{ __('app.complete_sale') }}
                         </button>
                     </div>
                 </div>
@@ -221,32 +221,32 @@
     <div class="receipt-container">
         <div class="card border-success mb-0">
             <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">Purchase Receipt</h4>
+                <h4 class="mb-0">{{ __('app.purchase_receipt') }}</h4>
                 <button type="button" class="btn-close btn-close-white" id="close-receipt" aria-label="Close"></button>
             </div>
             <div class="card-body">
                 <div id="receipt-content" class="p-3">
                     <div class="text-center mb-4">
-                        <h4>Store Name</h4>
-                        <p>123 Main Street, City, State 12345</p>
-                        <p>Phone: (123) 456-7890</p>
-                        <p class="mb-3">Receipt #<span id="receipt-number"></span></p>
-                        <p>Date: <span id="receipt-date"></span></p>
+                        <h4>{{ __('app.store_name') }}</h4>
+                        <p>{{ __('app.store_address') }}</p>
+                        <p>{{ __('app.store_phone') }}</p>
+                        <p class="mb-3">{{ __('app.receipt') }} #<span id="receipt-number"></span></p>
+                        <p>{{ __('app.date') }}: <span id="receipt-date"></span></p>
                     </div>
                     
                     <div class="mb-3">
-                        <p><strong>Register:</strong> <span id="receipt-register"></span></p>
-                        <p><strong>Customer:</strong> <span id="receipt-customer"></span></p>
-                        <p><strong>Payment Method:</strong> <span id="receipt-payment"></span></p>
+                        <p><strong>{{ __('app.register') }}:</strong> <span id="receipt-register"></span></p>
+                        <p><strong>{{ __('app.customer') }}:</strong> <span id="receipt-customer"></span></p>
+                        <p><strong>{{ __('app.payment_method') }}:</strong> <span id="receipt-payment"></span></p>
                     </div>
                     
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th>Item</th>
-                                <th>Price</th>
-                                <th>Qty</th>
-                                <th>Amount</th>
+                                <th>{{ __('app.item') }}</th>
+                                <th>{{ __('app.price') }}</th>
+                                <th>{{ __('app.qty') }}</th>
+                                <th>{{ __('app.amount') }}</th>
                             </tr>
                         </thead>
                         <tbody id="receipt-items">
@@ -254,23 +254,23 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                <td colspan="3" class="text-end"><strong>{{ __('app.total') }}:</strong></td>
                                 <td id="receipt-total"></td>
                             </tr>
                         </tfoot>
                     </table>
                     
                     <div class="text-center mt-4">
-                        <p>Thank you for your purchase!</p>
+                        <p>{{ __('app.thank_you_for_purchase') }}</p>
                     </div>
                 </div>
             </div>
             <div class="card-footer">
                 <div class="d-flex justify-content-between">
-                    <button type="button" class="btn btn-secondary" id="back-to-sale">Back to Sale</button>
+                    <button type="button" class="btn btn-secondary" id="back-to-sale">{{ __('app.back_to_sale') }}</button>
                     <div>
-                        <button type="button" class="btn btn-primary me-2" id="print-receipt">Print Receipt</button>
-                        <button type="button" class="btn btn-success" id="confirm-sale">Confirm & Submit</button>
+                        <button type="button" class="btn btn-primary me-2" id="print-receipt">{{ __('app.print_receipt') }}</button>
+                        <button type="button" class="btn btn-success" id="confirm-sale">{{ __('app.confirm_and_submit') }}</button>
                     </div>
                 </div>
             </div>
@@ -369,7 +369,7 @@ document.addEventListener('DOMContentLoaded', function() {
             orderItemsContainer.innerHTML = `
                 <div class="text-center text-muted py-4" id="empty-cart-message">
                     <i class="fas fa-shopping-cart mb-2" style="font-size: 24px;"></i>
-                    <p>No items added yet</p>
+                    <p>${window.translations?.app?.no_items_added_yet || 'No items added yet'}</p>
                 </div>
             `;
             return;
@@ -498,7 +498,7 @@ document.addEventListener('DOMContentLoaded', function() {
         printWindow.document.write(`
             <html>
                 <head>
-                    <title>Print Receipt</title>
+                    <title>${window.translations?.app?.print_receipt || 'Print Receipt'}</title>
                     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
                     <style>
                         body { font-family: Arial, sans-serif; padding: 20px; }
