@@ -106,8 +106,6 @@ class ProductController extends Controller
 
         return redirect()->route('products.index')->with('success', 'Product deleted successfully.');
     }
-<<<<<<< HEAD
-=======
 
     public function uploadImage(Request $request)
     {
@@ -129,5 +127,4 @@ class ProductController extends Controller
 
         return back()->with('error', 'Image upload failed!');
     }
->>>>>>> 0da82be (Modify pages to support khmer language partially)
 }
