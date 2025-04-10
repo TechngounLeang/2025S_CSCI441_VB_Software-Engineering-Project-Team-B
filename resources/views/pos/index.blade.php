@@ -121,11 +121,11 @@
                 <div class="card h-100">
                     <div class="card-header">Payment Details</div>
                     <div class="card-body">
-                        <div class="mb-3">
+                                                <div class="mb-3">
                             <label for="payment_method" class="form-label">Payment Method</label>
                             <select class="form-control" id="payment_method" name="payment_method" required>
                                 <option value="">Select Payment Method</option>
-                                <option value="cash">Cash</option>
+                                <option value="cash" selected>Cash</option>
                                 <option value="credit_card">Credit Card</option>
                                 <option value="debit_card">Debit Card</option>
                             </select>
