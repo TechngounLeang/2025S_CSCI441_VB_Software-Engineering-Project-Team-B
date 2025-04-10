@@ -25,6 +25,7 @@ class ProductController extends Controller
     // Store a newly created product in the database
     public function store(Request $request)
     {
+<<<<<<< HEAD
         $request->validate([
             'name' => 'required|max:255',
             'description' => 'required',
@@ -37,6 +38,38 @@ class ProductController extends Controller
         Product::create($request->all());
 
         return redirect()->route('products.index')->with('success', 'Product created successfully.');
+=======
+        // Validate the request
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|numeric',
+            'category_id' => 'nullable|exists:categories,id',
+            'stock_quantity' => 'required|integer',
+            'reorder_level' => 'nullable|integer',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048', // validate image
+        ]);
+
+        // Handle the image upload
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('product_images', 'public');
+        } else {
+            $imagePath = null; // or set a default image path
+        }
+
+        // Create the product
+        $product = Product::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'price' => $request->price,
+            'category_id' => $request->category_id,
+            'stock_quantity' => $request->stock_quantity,
+            'reorder_level' => $request->reorder_level,
+            'image' => $imagePath,
+        ]);
+
+        return redirect()->route('products.index')->with('success', __('app.product_created_successfully'));
+>>>>>>> 0da82be (Modify pages to support khmer language partially)
     }
 
     // Display the specified product
@@ -76,4 +109,28 @@ class ProductController extends Controller
 
         return redirect()->route('products.index')->with('success', 'Product deleted successfully.');
     }
+<<<<<<< HEAD
+=======
+
+    public function uploadImage(Request $request)
+    {
+        // Validate the incoming request
+        $request->validate([
+            'image' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048', // adjust size as needed
+        ]);
+
+        // Handle the uploaded file
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            // Store the image in the 'public' disk, inside 'images' folder
+            $path = $request->file('image')->store('images', 'public');
+
+            // You can save the file path to the database if needed
+            // Example: User::create(['image_path' => $path]);
+
+            return back()->with('success', 'Image uploaded successfully!')->with('path', $path);
+        }
+
+        return back()->with('error', 'Image upload failed!');
+    }
+>>>>>>> 0da82be (Modify pages to support khmer language partially)
 }

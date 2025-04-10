@@ -79,10 +79,19 @@ return [
     */
 
     'locale' => env('APP_LOCALE', 'en'),
+<<<<<<< HEAD
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 
     'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
+=======
+    'fallback_locale' => 'en',
+    'available_locales' => [
+        'en' => 'English',
+        'es' => 'Español',
+        'km' => 'ខ្មែរ'  // Added Khmer
+    ],
+>>>>>>> 0da82be (Modify pages to support khmer language partially)
 
     /*
     |--------------------------------------------------------------------------
