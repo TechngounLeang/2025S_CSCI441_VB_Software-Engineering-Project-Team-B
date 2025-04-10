@@ -17,10 +17,7 @@ class Product extends Model
     // Define the fields that are mass assignable
     protected $fillable = [
         'name', 
-<<<<<<< HEAD
-=======
         'photo_path',
->>>>>>> 0da82be (Modify pages to support khmer language partially)
         'description', 
         'price', 
         'category_id', 

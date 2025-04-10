@@ -1,5 +1,7 @@
 <?php
 
+// Middleware for Language
+
 namespace App\Http\Middleware;
 
 use Closure;

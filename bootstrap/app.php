@@ -12,12 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         //
-<<<<<<< HEAD
-=======
         $middleware->web(append: [
             \App\Http\Middleware\SetLocale::class,
         ]);
->>>>>>> 0da82be (Modify pages to support khmer language partially)
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

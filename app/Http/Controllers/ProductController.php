@@ -25,7 +25,6 @@ class ProductController extends Controller
     // Store a newly created product in the database
     public function store(Request $request)
     {
-<<<<<<< HEAD
         $request->validate([
             'name' => 'required|max:255',
             'description' => 'required',
@@ -38,7 +37,6 @@ class ProductController extends Controller
         Product::create($request->all());
 
         return redirect()->route('products.index')->with('success', 'Product created successfully.');
-=======
         // Validate the request
         $request->validate([
             'name' => 'required|string|max:255',
@@ -69,7 +67,6 @@ class ProductController extends Controller
         ]);
 
         return redirect()->route('products.index')->with('success', __('app.product_created_successfully'));
->>>>>>> 0da82be (Modify pages to support khmer language partially)
     }
 
     // Display the specified product
