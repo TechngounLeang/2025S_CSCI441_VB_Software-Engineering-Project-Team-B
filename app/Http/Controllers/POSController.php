@@ -100,6 +100,20 @@ public function index()
             // Create order items
             $order->items()->createMany($orderItems);
 
+            // Calculate tax amount (8% of total)
+            $taxAmount = $totalAmount * 0.08;
+
+            // Create the sales record with tax
+            \App\Models\Sale::create([
+                'user_id' => auth()->id(),
+                'register_id' => $register->id,
+                'total_price' => $totalAmount,
+                'tax_amount' => $taxAmount, // 8% tax
+                'discount_amount' => 0, // No discount for now
+                'payment_method' => $request->payment_method,
+                'sale_date' => now()
+            ]);
+
             // Update register cash balance if payment is cash
             if ($request->payment_method === 'cash') {
                 $register->increment('cash_balance', $totalAmount);

@@ -17,12 +17,12 @@ class Product extends Model
     // Define the fields that are mass assignable
     protected $fillable = [
         'name', 
-        'photo_path',
         'description', 
         'price', 
         'category_id', 
         'stock_quantity', 
-        'reorder_level'
+        'reorder_level',
+        'photo_path'  
     ];
 
     // You can also define any relationships here if necessary (e.g., belongsTo, hasMany, etc.)

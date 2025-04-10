@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -25,18 +26,6 @@ class ProductController extends Controller
     // Store a newly created product in the database
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|max:255',
-            'description' => 'required',
-            'price' => 'required|numeric',
-            'category_id' => 'nullable|exists:categories,id', // Validate category id
-            'stock_quantity' => 'required|integer',
-            'reorder_level' => 'nullable|integer',
-        ]);
-
-        Product::create($request->all());
-
-        return redirect()->route('products.index')->with('success', 'Product created successfully.');
         // Validate the request
         $request->validate([
             'name' => 'required|string|max:255',
@@ -45,14 +34,13 @@ class ProductController extends Controller
             'category_id' => 'nullable|exists:categories,id',
             'stock_quantity' => 'required|integer',
             'reorder_level' => 'nullable|integer',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048', // validate image
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048', // still validate as 'image'
         ]);
 
         // Handle the image upload
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('product_images', 'public');
-        } else {
-            $imagePath = null; // or set a default image path
+        $photoPath = null;
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            $photoPath = $request->file('image')->store('product_images', 'public');
         }
 
         // Create the product
@@ -63,7 +51,7 @@ class ProductController extends Controller
             'category_id' => $request->category_id,
             'stock_quantity' => $request->stock_quantity,
             'reorder_level' => $request->reorder_level,
-            'image' => $imagePath,
+            'photo_path' => $photoPath,  // Use photo_path field
         ]);
 
         return redirect()->route('products.index')->with('success', __('app.product_created_successfully'));
@@ -89,12 +77,25 @@ class ProductController extends Controller
             'name' => 'required|max:255',
             'description' => 'required',
             'price' => 'required|numeric',
-            'category_id' => 'nullable|exists:categories,id', // Validate category id
+            'category_id' => 'nullable|exists:categories,id',
             'stock_quantity' => 'required|integer',
             'reorder_level' => 'nullable|integer',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
 
-        $product->update($request->all());
+        $data = $request->except('image');
+
+        // Handle image update
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            // Delete the old image if it exists
+            if ($product->photo_path && Storage::disk('public')->exists($product->photo_path)) {
+                Storage::disk('public')->delete($product->photo_path);
+            }
+
+            $data['photo_path'] = $request->file('image')->store('product_images', 'public');
+        }
+
+        $product->update($data);
 
         return redirect()->route('products.index')->with('success', 'Product updated successfully.');
     }

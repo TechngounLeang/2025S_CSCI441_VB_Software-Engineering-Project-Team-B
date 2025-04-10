@@ -25,9 +25,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+
     // Product Routes
     Route::resource('products', ProductController::class);
     Route::resource('categories', CategoryController::class);
+    Route::get('/sales', [App\Http\Controllers\SalesController::class, 'index'])->name('sales.index');
+    Route::get('/sales/report', [App\Http\Controllers\SalesController::class, 'report'])->name('sales.report');
+    Route::get('/sales/export', [App\Http\Controllers\SalesController::class, 'export'])->name('sales.export');
     Route::resource('sales', SalesController::class);
     Route::resource('orders', OrderController::class);
     Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
@@ -54,7 +58,6 @@ Route::middleware('auth')->group(function () {
     Route::resource('users', UserController::class);
     Route::get('users/create', [UserController::class, 'create'])->name('users.create'); // View for creating user
     Route::post('users', [UserController::class, 'store'])->name('users.store'); // Store the created user
-
     Route::get('/language/{locale}', [LanguageController::class, 'switchLang'])->name('language.switch');
 });
 
