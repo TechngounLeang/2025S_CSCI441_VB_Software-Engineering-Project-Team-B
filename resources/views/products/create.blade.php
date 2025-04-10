@@ -4,7 +4,7 @@
     <div class="container">
         <h1>{{ __('app.create_new_product') }}</h1>
 
-        <form action="{{ route('products.store') }}" method="POST">
+        <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="mb-3">
                 <label for="name" class="form-label">{{ __('app.product_name') }}</label>
@@ -37,7 +37,7 @@
 
             <div class="mb-3">
                 <label for="stock_quantity" class="form-label">{{ __('app.stock_quantity') }}</label>
-                <input type="number" class="form-control" id="stock_quantity" name="stock_quantity" required>
+                <input type="number" class="form-control" id="stock_quantity" name="stock_quantity" value="{{ old('stock_quantity') }}" required>
             </div>
 
             <div class="mb-3">
@@ -49,8 +49,8 @@
             <div class="mb-3">
                 <label for="image" class="form-label">{{ __('app.product_image') }}</label>
                 <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                <small class="form-text text-muted">{{ __('app.supported_formats') }}: JPG, JPEG, PNG, GIF ({{ __('app.max') }}: 2MB)</small>
             </div>
-
 
             <button type="submit" class="btn btn-primary">{{ __('app.create_product') }}</button>
         </form>

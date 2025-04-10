@@ -51,6 +51,7 @@
 .card-img-top {
     height: 120px;
     object-fit: cover;
+    background-color: #f8f9fa;
 }
 
 .order-summary {
@@ -147,7 +148,11 @@
                                 @foreach($products as $product)
                                 <div class="col-md-4 mb-3">
                                     <div class="card product-card" data-product-id="{{ $product->id }}" data-price="{{ $product->price }}">
-                                        <img src="https://placehold.co/150x100?text={{ urlencode($product->name) }}" class="card-img-top" alt="{{ $product->name }}">
+                                        @if($product->photo_path)
+                                            <img src="{{ asset('storage/' . $product->photo_path) }}" class="card-img-top" alt="{{ $product->name }}">
+                                        @else
+                                            <img src="https://placehold.co/150x100?text={{ urlencode($product->name) }}" class="card-img-top" alt="{{ $product->name }}">
+                                        @endif
                                         <div class="card-body p-2">
                                             <h6 class="card-title mb-1">{{ $product->name }}</h6>
                                             <p class="card-text mb-2">${{ number_format($product->price, 2) }}</p>
