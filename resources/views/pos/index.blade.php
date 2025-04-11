@@ -193,15 +193,15 @@
                         </div>
                         <hr>
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span>{{ __('app.subtotal') }}:</span>
+                            <span>{{ __('app.subtotal') }}</span>
                             <span id="subtotal-amount">$0.00</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span>{{ __('app.tax') }} (8%):</span>
+                            <span>{{ __('app.tax') }}</span>
                             <span id="tax-amount">$0.00</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">{{ __('app.total') }}:</h5>
+                            <h5 class="mb-0">{{ __('app.total') }}</h5>
                             <h5 class="mb-0" id="total-amount">$0.00</h5>
                         </div>
                     </div>
