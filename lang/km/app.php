@@ -32,6 +32,14 @@ return [
     'create_product'     => 'បង្កើតផលិតផល',
     'create_products'     => 'បង្កើតផលិតផល',
 
+    'point_of_sale_system' => 'ប្រព័ន្ធចុះលក់ដោយផ្ទាល់',
+    'quantity' => 'ចំនួន',
+    'store_address' => '១២៣ ផ្លូវមេន, ក្រុង, ប្រទេស',
+    'store_phone' => '+១ (៥៥៥) ១២៣-៤៥៦៧',
+    'receipt' => 'បង្កាន់ដៃ',
+    'manage_registers' => 'គ្រប់គ្រងប្រដាប់គិតលុយ',
+    'thank_you_for_purchase' => 'សូមអរគុណសម្រាប់ការទិញរបស់អ្នក!',
+
     'order_history' => 'ប្រវត្តិការបញ្ជាទិញ',
     'no_orders_found' => 'រកមិនឃើញការបញ្ជាទិញឡើយ។',
     'order_id' => 'លេខសម្គាល់ការបញ្ជាទិញ',
