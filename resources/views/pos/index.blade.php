@@ -193,15 +193,15 @@
                         </div>
                         <hr>
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span>{{ __('app.subtotal') }}:</span>
+                            <span>{{ __('app.subtotal') }}</span>
                             <span id="subtotal-amount">$0.00</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span>{{ __('app.tax') }} (8%):</span>
+                            <span>{{ __('app.tax') }}</span>
                             <span id="tax-amount">$0.00</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">{{ __('app.total') }}:</h5>
+                            <h5 class="mb-0">{{ __('app.total') }}</h5>
                             <h5 class="mb-0" id="total-amount">$0.00</h5>
                         </div>
                     </div>
@@ -254,7 +254,15 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="3" class="text-end"><strong>{{ __('app.total') }}:</strong></td>
+                                <td colspan="3" class="text-end"><strong>{{ __('app.subtotal') }}</strong></td>
+                                <td id="receipt-subtotal"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-end"><strong>{{ __('app.tax') }}</strong></td>
+                                <td id="receipt-tax"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-end"><strong>{{ __('app.total') }}</strong></td>
                                 <td id="receipt-total"></td>
                             </tr>
                         </tfoot>
@@ -463,7 +471,7 @@ document.addEventListener('DOMContentLoaded', function() {
         receiptItemsContainer.innerHTML = '';
         
         // Add purchased items to receipt
-        let totalAmount = 0;
+        let subtotalAmount = 0;
         
         const productCards = document.querySelectorAll('.product-card');
         productCards.forEach(card => {
@@ -473,7 +481,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const productName = card.querySelector('.card-title').textContent.trim();
                 const price = parseFloat(card.dataset.price);
                 const subtotal = price * quantity;
-                totalAmount += subtotal;
+                subtotalAmount += subtotal;
                 
                 // Create row for receipt
                 const tr = document.createElement('tr');
@@ -487,7 +495,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Update total on receipt
+        // Calculate tax and total
+        const taxAmount = subtotalAmount * TAX_RATE;
+        const totalAmount = subtotalAmount + taxAmount;
+        
+        // Update amounts on receipt
+        document.getElementById('receipt-subtotal').textContent = '$' + subtotalAmount.toFixed(2);
+        document.getElementById('receipt-tax').textContent = '$' + taxAmount.toFixed(2);
         document.getElementById('receipt-total').textContent = '$' + totalAmount.toFixed(2);
     }
     

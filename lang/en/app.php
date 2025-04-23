@@ -88,6 +88,17 @@ return [
     'register' => 'Register',
     'customer' => 'Customer',
 
+    'point_of_sale_system' => 'Point of Sale System',
+    'quantity' => 'Quantity',
+    'store_address' => '123 Main Street, Phnom Penh, Cambodia',
+    'store_phone' => '+855 (555) 123-4567',
+    'receipt' => 'Receipt',
+    'manage_registers' => 'Manage Registers',
+    'thank_you_for_purchase' => 'Thank you for your purchase!',
+    
+    'order_history' => 'Order History',
+    'no_orders_found' => 'No orders found.',
+
     'item' => 'Item',
     'price' => 'Price',
     'qty' => 'Qty',
