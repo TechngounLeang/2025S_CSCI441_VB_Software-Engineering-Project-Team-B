@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <div class="d-flex justify-content-between align-items-center py-3">
-        <h2>Dashboard</h2>
+        <h2 class="text-primary">Dashboard</h2>
         <div>
             <button class="btn btn-outline-secondary me-2">
                 <i class="fas fa-filter"></i> Filter
@@ -17,7 +17,7 @@
     <!-- Key Metrics Cards -->
     <div class="row mb-4">
         <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
+            <div class="card h-100 shadow-sm dashboard-card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -28,14 +28,14 @@
                             </p>
                         </div>
                         <div class="bg-light p-3 rounded">
-                            <i class="fas fa-shopping-cart text-primary" style="font-size: 24px;"></i>
+                            <i class="fas fa-shopping-cart" style="font-size: 24px; color: #83B6B9;"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
+            <div class="card h-100 shadow-sm dashboard-card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -46,14 +46,14 @@
                             </p>
                         </div>
                         <div class="bg-light p-3 rounded">
-                            <i class="fas fa-users text-warning" style="font-size: 24px;"></i>
+                            <i class="fas fa-users" style="font-size: 24px; color: #83B6B9;"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
+            <div class="card h-100 shadow-sm dashboard-card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -64,7 +64,7 @@
                             </p>
                         </div>
                         <div class="bg-light p-3 rounded">
-                            <i class="fas fa-dollar-sign text-success" style="font-size: 24px;"></i>
+                            <i class="fas fa-dollar-sign" style="font-size: 24px; color: #83B6B9;"></i>
                         </div>
                     </div>
                 </div>
@@ -73,7 +73,7 @@
     </div>
 
     <!-- Monthly Sales Analytics -->
-    <div class="card mb-4 shadow-sm">
+    <div class="card mb-4 shadow-sm dashboard-card">
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Monthly Sales Analytics</h5>
             <div class="btn-group btn-group-sm">
@@ -91,7 +91,7 @@
     <div class="row">
         <!-- Trending Coffee -->
         <div class="col-md-5">
-            <div class="card shadow-sm">
+            <div class="card shadow-sm dashboard-card">
                 <div class="card-header bg-white">
                     <h5 class="mb-0">Trending Coffee</h5>
                 </div>
@@ -99,7 +99,7 @@
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center">
-                                <span class="badge bg-primary rounded-pill me-2">1</span>
+                                <span class="badge rounded-pill me-2" style="background-color: #83B6B9;">1</span>
                                 Cappuccino
                             </div>
                             <span class="badge bg-light text-dark">342 orders</span>
@@ -139,7 +139,7 @@
         
         <!-- Recent Orders -->
         <div class="col-md-7">
-            <div class="card shadow-sm">
+            <div class="card shadow-sm dashboard-card">
                 <div class="card-header bg-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Recent Orders</h5>
                     <a href="{{ route('orders.index') }}" class="btn btn-sm btn-outline-primary">View All</a>
@@ -164,7 +164,7 @@
                                     <td>{{ \Carbon\Carbon::now()->format('m/d/Y h:i A') }}</td>
                                     <td>5</td>
                                     <td>$5.00</td>
-                                    <td><span class="badge bg-success">Completed</span></td>
+                                    <td><span class="badge" style="background-color: #83B6B9; color: white;">Completed</span></td>
                                 </tr>
                                 <tr>
                                     <td>2</td>
@@ -172,7 +172,7 @@
                                     <td>{{ \Carbon\Carbon::now()->subMinutes(15)->format('m/d/Y h:i A') }}</td>
                                     <td>3</td>
                                     <td>$3.00</td>
-                                    <td><span class="badge bg-success">Completed</span></td>
+                                    <td><span class="badge" style="background-color: #83B6B9; color: white;">Completed</span></td>
                                 </tr>
                                 <tr>
                                     <td>3</td>
@@ -180,7 +180,7 @@
                                     <td>{{ \Carbon\Carbon::now()->subMinutes(25)->format('m/d/Y h:i A') }}</td>
                                     <td>7</td>
                                     <td>$8.50</td>
-                                    <td><span class="badge bg-success">Completed</span></td>
+                                    <td><span class="badge" style="background-color: #83B6B9; color: white;">Completed</span></td>
                                 </tr>
                                 <tr>
                                     <td>4</td>
@@ -188,7 +188,7 @@
                                     <td>{{ \Carbon\Carbon::now()->subMinutes(40)->format('m/d/Y h:i A') }}</td>
                                     <td>2</td>
                                     <td>$4.00</td>
-                                    <td><span class="badge bg-success">Completed</span></td>
+                                    <td><span class="badge" style="background-color: #83B6B9; color: white;">Completed</span></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -227,12 +227,12 @@
                 datasets: [{
                     label: 'Daily Sales ($)',
                     data: generateRandomSales(),
-                    borderColor: 'rgba(59, 130, 246, 1)',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderColor: 'rgba(131, 182, 185, 1)',
+                    backgroundColor: 'rgba(131, 182, 185, 0.1)',
                     borderWidth: 2,
                     tension: 0.3,
                     fill: true,
-                    pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                    pointBackgroundColor: 'rgba(131, 182, 185, 1)',
                     pointRadius: 4,
                     pointHoverRadius: 6
                 }]
@@ -287,7 +287,6 @@
                 this.classList.add('active');
                 
                 // Update chart data based on selected time period
-                // This is just a simulation - in a real app you would fetch data from server
                 if (this.textContent === 'Daily') {
                     salesChart.data.labels = days.map(day => `${day} ${currentMonthName}`);
                     salesChart.data.datasets[0].data = generateRandomSales();
