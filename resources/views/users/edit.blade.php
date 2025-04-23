@@ -14,6 +14,14 @@
             <label>{{ __('app.email') }}</label>
             <input type="email" name="email" value="{{ $user->email }}" class="form-control" required>
         </div>
+        <div class="mb-3">
+            <label>{{ __('app.role') }}</label>
+            <select name="role" class="form-control" required>
+                <option value="cashier" {{ $user->role == 'cashier' ? 'selected' : '' }}>{{ __('app.cashier') }}</option>
+                <option value="manager" {{ $user->role == 'manager' ? 'selected' : '' }}>{{ __('app.manager') }}</option>
+                <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>{{ __('app.admin') }}</option>
+            </select>
+        </div>
         <button type="submit" class="btn btn-primary">{{ __('app.update') }}</button>
     </form>
 </div>

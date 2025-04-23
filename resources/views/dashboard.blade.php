@@ -22,9 +22,10 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-muted mb-1">Total Orders</h6>
-                            <h3 class="mb-0">21,375</h3>
-                            <p class="small text-success mb-0">
-                                <i class="fas fa-arrow-up"></i> 12% from last month
+                            <h3 class="mb-0">{{ number_format($totalOrders) }}</h3>
+                            <p class="small {{ $orderGrowth >= 0 ? 'text-success' : 'text-danger' }} mb-0">
+                                <i class="fas fa-arrow-{{ $orderGrowth >= 0 ? 'up' : 'down' }}"></i> 
+                                {{ abs($orderGrowth) }}% from last month
                             </p>
                         </div>
                         <div class="bg-light p-3 rounded">
@@ -40,9 +41,10 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-muted mb-1">New Customers</h6>
-                            <h3 class="mb-0">1,012</h3>
-                            <p class="small text-success mb-0">
-                                <i class="fas fa-arrow-up"></i> 5.2% from last month
+                            <h3 class="mb-0">{{ number_format($newCustomers) }}</h3>
+                            <p class="small {{ $customerGrowth >= 0 ? 'text-success' : 'text-danger' }} mb-0">
+                                <i class="fas fa-arrow-{{ $customerGrowth >= 0 ? 'up' : 'down' }}"></i> 
+                                {{ abs($customerGrowth) }}% from last month
                             </p>
                         </div>
                         <div class="bg-light p-3 rounded">
@@ -58,9 +60,10 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-muted mb-1">Total Sales</h6>
-                            <h3 class="mb-0">$24,254</h3>
-                            <p class="small text-success mb-0">
-                                <i class="fas fa-arrow-up"></i> 8.7% from last month
+                            <h3 class="mb-0">${{ number_format($totalSales, 2) }}</h3>
+                            <p class="small {{ $salesGrowth >= 0 ? 'text-success' : 'text-danger' }} mb-0">
+                                <i class="fas fa-arrow-{{ $salesGrowth >= 0 ? 'up' : 'down' }}"></i> 
+                                {{ abs($salesGrowth) }}% from last month
                             </p>
                         </div>
                         <div class="bg-light p-3 rounded">
@@ -77,9 +80,9 @@
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Monthly Sales Analytics</h5>
             <div class="btn-group btn-group-sm">
-                <button type="button" class="btn btn-outline-secondary active">Daily</button>
-                <button type="button" class="btn btn-outline-secondary">Weekly</button>
-                <button type="button" class="btn btn-outline-secondary">Monthly</button>
+                <button type="button" class="btn btn-outline-secondary active" id="btn-daily">Daily</button>
+                <button type="button" class="btn btn-outline-secondary" id="btn-weekly">Weekly</button>
+                <button type="button" class="btn btn-outline-secondary" id="btn-monthly">Monthly</button>
             </div>
         </div>
         <div class="card-body">
@@ -97,41 +100,16 @@
                 </div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
+                        @foreach($trendingProducts as $index => $product)
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center">
-                                <span class="badge rounded-pill me-2" style="background-color: #83B6B9;">1</span>
-                                Cappuccino
+                                <span class="badge {{ $index === 0 ? 'rounded-pill' : 'bg-secondary rounded-pill' }} me-2" 
+                                      style="{{ $index === 0 ? 'background-color: #83B6B9;' : '' }}">{{ $index + 1 }}</span>
+                                {{ $product->name }}
                             </div>
-                            <span class="badge bg-light text-dark">342 orders</span>
+                            <span class="badge bg-light text-dark">{{ $product->order_count }} orders</span>
                         </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center">
-                                <span class="badge bg-secondary rounded-pill me-2">2</span>
-                                Latte
-                            </div>
-                            <span class="badge bg-light text-dark">290 orders</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center">
-                                <span class="badge bg-secondary rounded-pill me-2">3</span>
-                                Frappuccino
-                            </div>
-                            <span class="badge bg-light text-dark">265 orders</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center">
-                                <span class="badge bg-secondary rounded-pill me-2">4</span>
-                                Mocha
-                            </div>
-                            <span class="badge bg-light text-dark">211 orders</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center">
-                                <span class="badge bg-secondary rounded-pill me-2">5</span>
-                                Espresso
-                            </div>
-                            <span class="badge bg-light text-dark">187 orders</span>
-                        </li>
+                        @endforeach
                     </ul>
                 </div>
             </div>
@@ -150,46 +128,40 @@
                             <thead class="table-light">
                                 <tr>
                                     <th>#</th>
-                                    <th>Item</th>
+                                    <th>Customer</th>
+                                    <th>Items</th>
                                     <th>Date & Time</th>
-                                    <th>Table</th>
-                                    <th>Price</th>
+                                    <th>Amount</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                @foreach($recentOrders as $order)
                                 <tr>
-                                    <td>1</td>
-                                    <td>Cappuccino</td>
-                                    <td>{{ \Carbon\Carbon::now()->format('m/d/Y h:i A') }}</td>
-                                    <td>5</td>
-                                    <td>$5.00</td>
-                                    <td><span class="badge" style="background-color: #83B6B9; color: white;">Completed</span></td>
+                                    <td>{{ $order->id }}</td>
+                                    <td>{{ $order->customer_name }}</td>
+                                    <td>
+                                        @php
+                                            $items = $order->items->map(function($item) {
+                                                return $item->product ? $item->product->name : 'Unknown Product';
+                                            })->implode(', ');
+                                            
+                                            // Truncate if too long
+                                            if(strlen($items) > 30) {
+                                                $items = substr($items, 0, 30) . '...';
+                                            }
+                                        @endphp
+                                        {{ $items }}
+                                    </td>
+                                    <td>{{ $order->created_at->format('m/d/Y h:i A') }}</td>
+                                    <td>${{ number_format($order->total_amount, 2) }}</td>
+                                    <td>
+                                        <span class="badge" style="background-color: #83B6B9; color: white;">
+                                            {{ ucfirst($order->status) }}
+                                        </span>
+                                    </td>
                                 </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>Americano</td>
-                                    <td>{{ \Carbon\Carbon::now()->subMinutes(15)->format('m/d/Y h:i A') }}</td>
-                                    <td>3</td>
-                                    <td>$3.00</td>
-                                    <td><span class="badge" style="background-color: #83B6B9; color: white;">Completed</span></td>
-                                </tr>
-                                <tr>
-                                    <td>3</td>
-                                    <td>Latte + Croissant</td>
-                                    <td>{{ \Carbon\Carbon::now()->subMinutes(25)->format('m/d/Y h:i A') }}</td>
-                                    <td>7</td>
-                                    <td>$8.50</td>
-                                    <td><span class="badge" style="background-color: #83B6B9; color: white;">Completed</span></td>
-                                </tr>
-                                <tr>
-                                    <td>4</td>
-                                    <td>Double Espresso</td>
-                                    <td>{{ \Carbon\Carbon::now()->subMinutes(40)->format('m/d/Y h:i A') }}</td>
-                                    <td>2</td>
-                                    <td>$4.00</td>
-                                    <td><span class="badge" style="background-color: #83B6B9; color: white;">Completed</span></td>
-                                </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -204,29 +176,20 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Monthly sales data for the chart
-        const currentMonth = new Date().getMonth();
-        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        const currentMonthName = monthNames[currentMonth];
-        
-        // Generate days of the current month
-        const daysInMonth = new Date(new Date().getFullYear(), currentMonth + 1, 0).getDate();
-        const days = Array.from({length: daysInMonth}, (_, i) => i + 1);
-        
-        // Generate random sales data for each day
-        const generateRandomSales = () => {
-            return Array.from({length: daysInMonth}, () => Math.floor(Math.random() * 2000) + 1000);
-        };
+        // Prepare data for charts
+        const dailySalesData = @json($salesData);
+        const weeklySalesData = @json($weeklySalesData);
+        const monthlySalesData = @json($monthlySalesData);
         
         // Create the sales chart
         var ctx = document.getElementById('sales-analytics').getContext('2d');
         var salesChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: days.map(day => `${day} ${currentMonthName}`),
+                labels: dailySalesData.map(item => item.date),
                 datasets: [{
                     label: 'Daily Sales ($)',
-                    data: generateRandomSales(),
+                    data: dailySalesData.map(item => item.total),
                     borderColor: 'rgba(131, 182, 185, 1)',
                     backgroundColor: 'rgba(131, 182, 185, 0.1)',
                     borderWidth: 2,
@@ -250,7 +213,7 @@
                         cornerRadius: 6,
                         callbacks: {
                             label: function(context) {
-                                return `Sales: $${context.parsed.y.toLocaleString()}`;
+                                return `Sales: $${parseFloat(context.parsed.y).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
                             }
                         }
                     }
@@ -281,44 +244,34 @@
         });
         
         // Event handlers for time period buttons
-        document.querySelectorAll('.btn-group .btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.btn-group .btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Update chart data based on selected time period
-                if (this.textContent === 'Daily') {
-                    salesChart.data.labels = days.map(day => `${day} ${currentMonthName}`);
-                    salesChart.data.datasets[0].data = generateRandomSales();
-                } else if (this.textContent === 'Weekly') {
-                    const weeks = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'];
-                    salesChart.data.labels = weeks;
-                    salesChart.data.datasets[0].data = [
-                        Math.floor(Math.random() * 10000) + 5000,
-                        Math.floor(Math.random() * 10000) + 5000,
-                        Math.floor(Math.random() * 10000) + 5000,
-                        Math.floor(Math.random() * 10000) + 5000,
-                        Math.floor(Math.random() * 10000) + 5000
-                    ];
-                } else if (this.textContent === 'Monthly') {
-                    const last6Months = [];
-                    for (let i = 5; i >= 0; i--) {
-                        let d = new Date();
-                        d.setMonth(d.getMonth() - i);
-                        last6Months.push(monthNames[d.getMonth()]);
-                    }
-                    salesChart.data.labels = last6Months;
-                    salesChart.data.datasets[0].data = [
-                        Math.floor(Math.random() * 50000) + 20000,
-                        Math.floor(Math.random() * 50000) + 20000,
-                        Math.floor(Math.random() * 50000) + 20000,
-                        Math.floor(Math.random() * 50000) + 20000,
-                        Math.floor(Math.random() * 50000) + 20000,
-                        Math.floor(Math.random() * 50000) + 20000
-                    ];
-                }
-                salesChart.update();
-            });
+        document.getElementById('btn-daily').addEventListener('click', function() {
+            document.querySelectorAll('.btn-group .btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            salesChart.data.labels = dailySalesData.map(item => item.date);
+            salesChart.data.datasets[0].data = dailySalesData.map(item => item.total);
+            salesChart.data.datasets[0].label = 'Daily Sales ($)';
+            salesChart.update();
+        });
+        
+        document.getElementById('btn-weekly').addEventListener('click', function() {
+            document.querySelectorAll('.btn-group .btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            salesChart.data.labels = weeklySalesData.map(item => item.week);
+            salesChart.data.datasets[0].data = weeklySalesData.map(item => item.total);
+            salesChart.data.datasets[0].label = 'Weekly Sales ($)';
+            salesChart.update();
+        });
+        
+        document.getElementById('btn-monthly').addEventListener('click', function() {
+            document.querySelectorAll('.btn-group .btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            salesChart.data.labels = monthlySalesData.map(item => item.month);
+            salesChart.data.datasets[0].data = monthlySalesData.map(item => item.total);
+            salesChart.data.datasets[0].label = 'Monthly Sales ($)';
+            salesChart.update();
         });
     });
 </script>

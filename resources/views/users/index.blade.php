@@ -15,6 +15,7 @@
                 <th>{{ __('app.id') }}</th>
                 <th>{{ __('app.name') }}</th>
                 <th>{{ __('app.email') }}</th>
+                <th>{{ __('app.role') }}</th>
                 <th>{{ __('app.actions') }}</th>
             </tr>
         </thead>
@@ -24,6 +25,7 @@
                     <td>{{ $user->id }}</td>
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->email }}</td>
+                    <td>{{ ucfirst($user->role) }}</td>
                     <td>
                         <a href="{{ route('users.edit', $user->id) }}" class="btn btn-warning btn-sm">{{ __('app.edit') }}</a>
                         <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="d-inline">
