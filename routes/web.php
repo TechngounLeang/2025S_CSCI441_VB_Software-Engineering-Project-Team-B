@@ -37,8 +37,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/sales/report', [SalesController::class, 'report'])->name('sales.report');
         Route::get('/sales/export', [SalesController::class, 'export'])->name('sales.export');
         Route::resource('sales', SalesController::class);
+        
+        // Order management
         Route::resource('orders', OrderController::class);
-        Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
+        // Add the quick status update route
+        Route::patch('/orders/{order}/update-status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
         
         // Register management
         Route::get('registers', [POSController::class, 'registers'])->name('pos.registers');
