@@ -75,6 +75,7 @@ return [
     'payment_details' => 'Payment Details',
     'select_register' => 'Select Register',
     'select_payment_method' => 'Select Payment Method',
+    'all_rights_reserved' => 'All rights reserved.',
 
     'order_summary' => 'Order Summary',
     'subtotal' => 'Subtotal:',
@@ -101,6 +102,9 @@ return [
     'thank_you_for_purchase' => 'Thank you for your purchase!',
     'product_selection' => 'Product Selection',
     'welcome_to' => 'Welcome to',
+    'profile' => 'Profile',
+    'logout' => 'Logout',
+    'login' => 'Login',
     
     'order_history' => 'Order History',
     'no_orders_found' => 'No orders found.',

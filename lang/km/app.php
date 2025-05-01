@@ -44,6 +44,11 @@ return [
     'receipt' => 'បង្កាន់ដៃ',
     'manage_registers' => 'គ្រប់គ្រងប្រដាប់គិតលុយ',
     'thank_you_for_purchase' => 'សូមអរគុណសម្រាប់ការទិញរបស់អ្នក!',
+    "all_rights_reserved" => "រក្សាសិទ្ធិគ្រប់យ៉ាង",
+    "profile" => "ប្រវត្តិរូប",
+    'logout' => 'ចាកចេញ',
+    'login' => 'ចូល',
+    'register' => 'ចុះឈ្មោះ',
 
     'order_history' => 'ប្រវត្តិការបញ្ជាទិញ',
     'no_orders_found' => 'រកមិនឃើញការបញ្ជាទិញឡើយ។',
