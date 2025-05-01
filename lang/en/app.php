@@ -24,6 +24,10 @@ return [
     'cancelled' => 'Cancelled',
     'cash' => 'Cash',
     'card' => 'Card',
+    'credit_card' => 'Credit Card',
+    'debit_card' => 'Debit Card',
+    'product_list' => 'Product List',
+    'create_new_product' => 'Create New Product',
 
     'create_user' => 'Create User',
     'edit_user' => 'Edit User',
@@ -95,6 +99,8 @@ return [
     'receipt' => 'Receipt',
     'manage_registers' => 'Manage Registers',
     'thank_you_for_purchase' => 'Thank you for your purchase!',
+    'product_selection' => 'Product Selection',
+    'welcome_to' => 'Welcome to',
     
     'order_history' => 'Order History',
     'no_orders_found' => 'No orders found.',

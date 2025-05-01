@@ -31,6 +31,11 @@ return [
     'select_category' => 'ជ្រើសប្រភេទ',
     'create_product'     => 'បង្កើតផលិតផល',
     'create_products'     => 'បង្កើតផលិតផល',
+    'product_selection' => 'ជ្រើសផលិតផល',
+    'credit_card' => 'កាតឥណទាន',
+    'debit_card' => 'កាតឥណទាន',
+    'product_list' => 'បញ្ជីផលិតផល',
+    'create_new_product' => 'បង្កើតផលិតផលថ្មី',
 
     'point_of_sale_system' => 'ប្រព័ន្ធចុះលក់ដោយផ្ទាល់',
     'quantity' => 'ចំនួន',
