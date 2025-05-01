@@ -126,12 +126,11 @@
                             <label for="payment_method" class="form-label">{{ __('app.payment_method') }}</label>
                             <select class="form-control" id="payment_method" name="payment_method" required>
                                 <option value="">{{ __('app.select_payment_method') }}</option>
-                                <option value="cash">{{ __('app.cash') }}</option>
+                                <option value="cash" selected>{{ __('app.cash') }}</option>
                                 <option value="credit_card">{{ __('app.credit_card') }}</option>
                                 <option value="debit_card">{{ __('app.debit_card') }}</option>
                             </select>
                         </div>
-                    </div>
                 </div>
             </div>
         </div>

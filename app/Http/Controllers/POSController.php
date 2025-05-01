@@ -60,7 +60,7 @@ public function index()
                 throw new \Exception("Register is not open for sales");
             }
 
-            $totalAmount = 0;
+            $subtotal = 0;
             $orderItems = [];
 
             // Process each product
@@ -73,7 +73,7 @@ public function index()
                 }
 
                 $itemTotal = $product->price * $productData['quantity'];
-                $totalAmount += $itemTotal;
+                $subtotal += $itemTotal;
 
                 // Prepare order items and update stock
                 $orderItems[] = [
@@ -87,10 +87,16 @@ public function index()
                 $product->decrement('stock_quantity', $productData['quantity']);
             }
 
-            // Create the order
+            // Calculate tax amount (8% of subtotal)
+            $taxAmount = $subtotal * 0.08;
+            
+            // Calculate total with tax included
+            $totalWithTax = $subtotal + $taxAmount;
+
+            // Create the order - now including tax in total_amount
             $order = Order::create([
                 'customer_name' => $request->customer_name,
-                'total_amount' => $totalAmount,
+                'total_amount' => $totalWithTax,
                 'status' => 'completed',
                 'payment_method' => $request->payment_method,
                 'register_id' => $register->id,
@@ -100,30 +106,27 @@ public function index()
             // Create order items
             $order->items()->createMany($orderItems);
 
-            // Calculate tax amount (8% of total)
-            $taxAmount = $totalAmount * 0.08;
-
             // Create the sales record with tax
             \App\Models\Sale::create([
                 'user_id' => auth()->id(),
                 'register_id' => $register->id,
-                'total_price' => $totalAmount,
-                'tax_amount' => $taxAmount, // 8% tax
+                'total_price' => $totalWithTax, 
+                'tax_amount' => $taxAmount,
                 'discount_amount' => 0, // No discount for now
                 'payment_method' => $request->payment_method,
                 'sale_date' => now()
             ]);
 
-            // Update register cash balance if payment is cash
+            // Update register cash balance if payment is cash - now using total with tax
             if ($request->payment_method === 'cash') {
-                $register->increment('cash_balance', $totalAmount);
+                $register->increment('cash_balance', $totalWithTax); 
             }
             
             // Update register transaction count
             $register->increment('transaction_count');
 
             return redirect()->route('pos.index')
-                ->with('success', 'Sale completed successfully! Total: $' . number_format($totalAmount, 2));
+                ->with('success', 'Sale completed successfully! Total: $' . number_format($totalWithTax, 2)); 
         });
     } catch (\Exception $e) {
         // Rollback the transaction and return with an error
