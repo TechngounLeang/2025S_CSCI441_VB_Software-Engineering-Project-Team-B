@@ -8,6 +8,7 @@ use App\Models\OrderItem;
 use App\Models\Register;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Category;
 
 class POSController extends Controller
 {
@@ -16,14 +17,14 @@ class POSController extends Controller
 public function index()
 {
     $products = Product::where('stock_quantity', '>', 0)->get();
-    
+     $categories = Category::all();
     // Either show all registers:
     $registers = Register::all();
     
     // OR show both open and closed (but indicate status):
     // $registers = Register::orderBy('status', 'desc')->get();
     
-    return view('pos.index', compact('products', 'registers'));
+    return view('pos.index', compact('products', 'registers','categories'));
 }
 
     // Handle the checkout process

@@ -49,6 +49,8 @@ return [
     'logout' => 'ចាកចេញ',
     'login' => 'ចូល',
     'register' => 'ចុះឈ្មោះ',
+    'all_products' => 'ផលិតផលទាំងអស់',
+    'no_products_in_category' => 'រកមិនឃើញផលិតផលក្នុងប្រភេទនេះទេ',
 
     'order_history' => 'ប្រវត្តិការបញ្ជាទិញ',
     'no_orders_found' => 'រកមិនឃើញការបញ្ជាទិញឡើយ។',

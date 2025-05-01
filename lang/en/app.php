@@ -92,7 +92,8 @@ return [
     'confirm_and_submit' => 'Confirm & Submit',
     'register' => 'Register',
     'customer' => 'Customer',
-
+    'all_products' => 'All Products',
+    'no_products_in_category' => 'No products found in this category',
     'point_of_sale_system' => 'Point of Sale System',
     'quantity' => 'Quantity',
     'store_address' => '123 Main Street, Phnom Penh, Cambodia',

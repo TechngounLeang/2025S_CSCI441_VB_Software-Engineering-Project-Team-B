@@ -135,18 +135,78 @@
             </div>
         </div>
 
-        <!-- Products and Order Summary -->
-        <div class="row">
-            <!-- Product Selection (70%) -->
-            <div class="col-lg-8">
-                <div class="card mb-4">
-                    <div class="card-header">{{ __('app.product_selection') }}</div>
-                    <div class="card-body product-selection">
-                        <div id="products-container">
-                            <div class="row">
-                                @foreach($products as $product)
+       <!-- Products and Order Summary -->
+
+<div class="row m-1 mt-4">
+    <div class="col-lg-8">
+        <div class="card h-100">
+            <div class="card-header">{{ __('app.product_selection') }}</div>
+            
+            <!-- Category Tabs -->
+            <ul class="nav nav-tabs mt-2 px-3" id="categoryTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all-products" 
+                        type="button" role="tab" aria-controls="all-products" aria-selected="true">
+                        {{ __('app.all_products') }}
+                    </button>
+                </li>
+                @foreach($categories as $category)
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="category-{{ $category->id }}-tab" data-bs-toggle="tab" 
+                        data-bs-target="#category-{{ $category->id }}" type="button" role="tab" 
+                        aria-controls="category-{{ $category->id }}" aria-selected="false">
+                        {{ $category->name }}
+                    </button>
+                </li>
+                @endforeach
+            </ul>
+            
+            <div class="card-body product-selection">
+                <div class="tab-content" id="categoryTabContent">
+                    <!-- All Products Tab -->
+                    <div class="tab-pane fade show active" id="all-products" role="tabpanel" aria-labelledby="all-tab">
+                        <div class="row">
+                            @foreach($products as $product)
+                            <div class="col-md-4 mb-3">
+                                <div class="card product-card" data-product-id="{{ $product->id }}" data-price="{{ $product->price }}" 
+                                     data-category-id="{{ $product->category_id }}">
+                                    @if($product->photo_path)
+                                        <img src="{{ asset('storage/' . $product->photo_path) }}" class="card-img-top" alt="{{ $product->name }}">
+                                    @else
+                                        <img src="https://placehold.co/150x100?text={{ urlencode($product->name) }}" class="card-img-top" alt="{{ $product->name }}">
+                                    @endif
+                                    <div class="card-body p-2">
+                                        <h6 class="card-title mb-1">{{ $product->name }}</h6>
+                                        <p class="card-text mb-2">${{ number_format($product->price, 2) }}</p>
+                                        <div class="input-group input-group-sm">
+                                            <input type="number" 
+                                                   class="form-control product-quantity" 
+                                                   name="products[{{ $loop->index }}][quantity]" 
+                                                   min="0" 
+                                                   max="{{ $product->stock_quantity }}"
+                                                   data-max="{{ $product->stock_quantity }}"
+                                                   placeholder="{{ __('app.quantity') }}">
+                                            <input type="hidden" name="products[{{ $loop->index }}][id]" value="{{ $product->id }}">
+                                        </div>
+                                        <div class="product-subtotal text-end mt-1">$0.00</div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    
+                    <!-- Category Specific Tabs -->
+                    @foreach($categories as $category)
+                    <div class="tab-pane fade" id="category-{{ $category->id }}" role="tabpanel" aria-labelledby="category-{{ $category->id }}-tab">
+                        <div class="row">
+                            @php $productCount = 0; @endphp
+                            @foreach($products as $index => $product)
+                                @if($product->category_id == $category->id)
+                                @php $productCount++; @endphp
                                 <div class="col-md-4 mb-3">
-                                    <div class="card product-card" data-product-id="{{ $product->id }}" data-price="{{ $product->price }}">
+                                    <div class="card product-card" data-product-id="{{ $product->id }}" data-price="{{ $product->price }}"
+                                         data-category-id="{{ $product->category_id }}">
                                         @if($product->photo_path)
                                             <img src="{{ asset('storage/' . $product->photo_path) }}" class="card-img-top" alt="{{ $product->name }}">
                                         @else
@@ -158,60 +218,69 @@
                                             <div class="input-group input-group-sm">
                                                 <input type="number" 
                                                        class="form-control product-quantity" 
-                                                       name="products[{{ $loop->index }}][quantity]" 
+                                                       name="products[{{ $index }}][quantity]" 
                                                        min="0" 
                                                        max="{{ $product->stock_quantity }}"
                                                        data-max="{{ $product->stock_quantity }}"
                                                        placeholder="{{ __('app.quantity') }}">
-                                                <input type="hidden" name="products[{{ $loop->index }}][id]" value="{{ $product->id }}">
+                                                <input type="hidden" name="products[{{ $index }}][id]" value="{{ $product->id }}">
                                             </div>
                                             <div class="product-subtotal text-end mt-1">$0.00</div>
                                         </div>
                                     </div>
                                 </div>
-                                @endforeach
+                                @endif
+                            @endforeach
+                            
+                            @if($productCount == 0)
+                            <div class="col-12 text-center py-4">
+                                <p class="text-muted">{{ __('app.no_products_in_category') }}</p>
                             </div>
+                            @endif
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Order Summary (30%) -->
-            <div class="col-lg-4">
-                <div class="card order-summary mb-4">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">{{ __('app.order_summary') }}</h5>
-                    </div>
-                    <div class="card-body">
-                        <div id="order-items" class="mb-3">
-                            <!-- Order items will be displayed here dynamically -->
-                            <div class="text-center text-muted py-4" id="empty-cart-message">
-                                <i class="fas fa-shopping-cart mb-2" style="font-size: 24px;"></i>
-                                <p>{{ __('app.no_items_added_yet') }}</p>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span>{{ __('app.subtotal') }}</span>
-                            <span id="subtotal-amount">$0.00</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span>{{ __('app.tax') }}</span>
-                            <span id="tax-amount">$0.00</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">{{ __('app.total') }}</h5>
-                            <h5 class="mb-0" id="total-amount">$0.00</h5>
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <button type="button" class="btn btn-primary btn-lg w-100" id="complete-sale-btn" disabled>
-                            {{ __('app.complete_sale') }}
-                        </button>
-                    </div>
+                    @endforeach
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Order Summary (30%) -->
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">{{ __('app.order_summary') }}</h5>
+            </div>
+            <div class="card-body">
+                <div id="order-items" class="mb-3">
+                    <!-- Order items will be displayed here dynamically -->
+                    <div class="text-center text-muted py-4" id="empty-cart-message">
+                        <i class="fas fa-shopping-cart mb-2" style="font-size: 24px;"></i>
+                        <p>{{ __('app.no_items_added_yet') }}</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>{{ __('app.subtotal') }}</span>
+                    <span id="subtotal-amount">$0.00</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>{{ __('app.tax') }}</span>
+                    <span id="tax-amount">$0.00</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">{{ __('app.total') }}</h5>
+                    <h5 class="mb-0" id="total-amount">$0.00</h5>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button type="button" class="btn btn-primary btn-lg w-100" id="complete-sale-btn" disabled>
+                    {{ __('app.complete_sale') }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
     </form>
 </div>
 
@@ -305,64 +374,66 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Simple function to update all calculations
     function updateCalculations() {
-        console.log('Updating calculations...');
-        let subtotal = 0;
-        let hasProducts = false;
-        let orderItems = [];
+    console.log('Updating calculations...');
+    let subtotal = 0;
+    let hasProducts = false;
+    let orderItems = {};  // Change to an object keyed by product ID
+    
+    // Process each product card
+    document.querySelectorAll('.product-card').forEach((card, index) => {
+        const quantityInput = card.querySelector('.product-quantity');
+        const subtotalElement = card.querySelector('.product-subtotal');
         
-        // Process each product card
-        document.querySelectorAll('.product-card').forEach((card, index) => {
-            const quantityInput = card.querySelector('.product-quantity');
-            const subtotalElement = card.querySelector('.product-subtotal');
-            
-            if (!quantityInput || !subtotalElement) {
-                console.error(`Missing elements in card ${index}`);
-                return;
-            }
-            
-            const productName = card.querySelector('.card-title').textContent.trim();
-            const price = parseFloat(card.dataset.price) || 0;
-            const quantity = parseInt(quantityInput.value) || 0;
-            
-            // Calculate and display subtotal
-            const itemSubtotal = price * quantity;
-            subtotalElement.textContent = '$' + itemSubtotal.toFixed(2);
-            
-            // Add to subtotal
-            subtotal += itemSubtotal;
-            
-            // Check if any products are selected
-            if (quantity > 0) {
-                hasProducts = true;
-                card.classList.add('border-primary');
-                
-                // Add to order items
-                orderItems.push({
-                    name: productName,
-                    price: price,
-                    quantity: quantity,
-                    subtotal: itemSubtotal
-                });
-            } else {
-                card.classList.remove('border-primary');
-            }
-        });
+        if (!quantityInput || !subtotalElement) {
+            console.error(`Missing elements in card ${index}`);
+            return;
+        }
         
-        // Calculate tax and total
-        const tax = subtotal * TAX_RATE;
-        const total = subtotal + tax;
+        const productId = card.dataset.productId;
+        const productName = card.querySelector('.card-title').textContent.trim();
+        const price = parseFloat(card.dataset.price) || 0;
+        const quantity = parseInt(quantityInput.value) || 0;
         
-        // Update display
-        subtotalAmountElement.textContent = '$' + subtotal.toFixed(2);
-        taxAmountElement.textContent = '$' + tax.toFixed(2);
-        totalAmountElement.textContent = '$' + total.toFixed(2);
+        // Calculate and display subtotal
+        const itemSubtotal = price * quantity;
+        subtotalElement.textContent = '$' + itemSubtotal.toFixed(2);
         
-        // Enable or disable complete button based on having products
-        completeSaleButton.disabled = !hasProducts;
-        
-        // Update order summary
-        updateOrderSummary(orderItems, hasProducts);
-    }
+        // Only add items with quantity > 0
+        if (quantity > 0) {
+            hasProducts = true;
+            card.classList.add('border-primary');
+            
+            // Store in orderItems object using productId as key to prevent duplicates
+            orderItems[productId] = {
+                name: productName,
+                price: price,
+                quantity: quantity,
+                subtotal: itemSubtotal
+            };
+        } else {
+            card.classList.remove('border-primary');
+        }
+    });
+    
+    // Convert the orderItems object to an array and calculate subtotal
+    const orderItemsArray = Object.values(orderItems);
+    subtotal = orderItemsArray.reduce((total, item) => total + item.subtotal, 0);
+    
+    // Calculate tax and total
+    const tax = subtotal * TAX_RATE;
+    const total = subtotal + tax;
+    
+    // Update display
+    subtotalAmountElement.textContent = '$' + subtotal.toFixed(2);
+    taxAmountElement.textContent = '$' + tax.toFixed(2);
+    totalAmountElement.textContent = '$' + total.toFixed(2);
+    
+    // Enable or disable complete button based on having products
+    completeSaleButton.disabled = !hasProducts;
+    
+    // Update order summary
+    updateOrderSummary(orderItemsArray, hasProducts);
+}
     
     // Function to update order summary
     function updateOrderSummary(items, hasProducts) {
@@ -449,60 +520,67 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Function to generate receipt
     function generateReceipt() {
-        console.log('Generating receipt...');
+    console.log('Generating receipt...');
+    
+    // Get form data
+    const registerSelect = document.getElementById('register_id');
+    const registerText = registerSelect.options[registerSelect.selectedIndex].text;
+    const customerName = document.getElementById('customer_name').value;
+    const paymentMethodSelect = document.getElementById('payment_method');
+    const paymentMethod = paymentMethodSelect.options[paymentMethodSelect.selectedIndex].text;
+    
+    // Populate receipt header
+    document.getElementById('receipt-number').textContent = 'INV-' + Math.floor(Math.random() * 10000);
+    document.getElementById('receipt-date').textContent = new Date().toLocaleString();
+    document.getElementById('receipt-register').textContent = registerText;
+    document.getElementById('receipt-customer').textContent = customerName;
+    document.getElementById('receipt-payment').textContent = paymentMethod;
+    
+    // Clear previous items
+    const receiptItemsContainer = document.getElementById('receipt-items');
+    receiptItemsContainer.innerHTML = '';
+    
+    // Add purchased items to receipt
+    let subtotalAmount = 0;
+    
+    // Track products by ID to prevent duplicates
+    const addedProducts = {};
+    
+    const productCards = document.querySelectorAll('.product-card');
+    productCards.forEach(card => {
+        const quantity = parseInt(card.querySelector('.product-quantity').value) || 0;
+        const productId = card.dataset.productId;
         
-        // Get form data
-        const registerSelect = document.getElementById('register_id');
-        const registerText = registerSelect.options[registerSelect.selectedIndex].text;
-        const customerName = document.getElementById('customer_name').value;
-        const paymentMethodSelect = document.getElementById('payment_method');
-        const paymentMethod = paymentMethodSelect.options[paymentMethodSelect.selectedIndex].text;
-        
-        // Populate receipt header
-        document.getElementById('receipt-number').textContent = 'INV-' + Math.floor(Math.random() * 10000);
-        document.getElementById('receipt-date').textContent = new Date().toLocaleString();
-        document.getElementById('receipt-register').textContent = registerText;
-        document.getElementById('receipt-customer').textContent = customerName;
-        document.getElementById('receipt-payment').textContent = paymentMethod;
-        
-        // Clear previous items
-        const receiptItemsContainer = document.getElementById('receipt-items');
-        receiptItemsContainer.innerHTML = '';
-        
-        // Add purchased items to receipt
-        let subtotalAmount = 0;
-        
-        const productCards = document.querySelectorAll('.product-card');
-        productCards.forEach(card => {
-            const quantity = parseInt(card.querySelector('.product-quantity').value) || 0;
+        // Only process each product once
+        if (quantity > 0 && !addedProducts[productId]) {
+            addedProducts[productId] = true; // Mark as processed
             
-            if (quantity > 0) {
-                const productName = card.querySelector('.card-title').textContent.trim();
-                const price = parseFloat(card.dataset.price);
-                const subtotal = price * quantity;
-                subtotalAmount += subtotal;
-                
-                // Create row for receipt
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${productName}</td>
-                    <td>$${price.toFixed(2)}</td>
-                    <td>${quantity}</td>
-                    <td>$${subtotal.toFixed(2)}</td>
-                `;
-                receiptItemsContainer.appendChild(tr);
-            }
-        });
-        
-        // Calculate tax and total
-        const taxAmount = subtotalAmount * TAX_RATE;
-        const totalAmount = subtotalAmount + taxAmount;
-        
-        // Update amounts on receipt
-        document.getElementById('receipt-subtotal').textContent = '$' + subtotalAmount.toFixed(2);
-        document.getElementById('receipt-tax').textContent = '$' + taxAmount.toFixed(2);
-        document.getElementById('receipt-total').textContent = '$' + totalAmount.toFixed(2);
-    }
+            const productName = card.querySelector('.card-title').textContent.trim();
+            const price = parseFloat(card.dataset.price);
+            const subtotal = price * quantity;
+            subtotalAmount += subtotal;
+            
+            // Create row for receipt
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${productName}</td>
+                <td>$${price.toFixed(2)}</td>
+                <td>${quantity}</td>
+                <td>$${subtotal.toFixed(2)}</td>
+            `;
+            receiptItemsContainer.appendChild(tr);
+        }
+    });
+    
+    // Calculate tax and total
+    const taxAmount = subtotalAmount * TAX_RATE;
+    const totalAmount = subtotalAmount + taxAmount;
+    
+    // Update amounts on receipt
+    document.getElementById('receipt-subtotal').textContent = '$' + subtotalAmount.toFixed(2);
+    document.getElementById('receipt-tax').textContent = '$' + taxAmount.toFixed(2);
+    document.getElementById('receipt-total').textContent = '$' + totalAmount.toFixed(2);
+}
     
     // Print receipt button
     document.getElementById('print-receipt').addEventListener('click', function() {
@@ -562,7 +640,40 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('selectedRegisterId', this.value);
         });
     }
+
+    // Synchronize product quantities across tabs
+    function syncQuantities() {
+        document.querySelectorAll('.product-card').forEach(card => {
+            const productId = card.getAttribute('data-product-id');
+            const quantityInputs = document.querySelectorAll(`.product-card[data-product-id="${productId}"] .product-quantity`);
+            
+            quantityInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    const newValue = this.value;
+                    quantityInputs.forEach(otherInput => {
+                        if (otherInput !== this) {
+                            otherInput.value = newValue;
+                        }
+                    });
+                    updateCalculations();
+                });
+            });
+        });
+    }
+
+    // Call this function after DOM is loaded
+    syncQuantities();
+
+    // Register tab change event to ensure calculations are updated
+    document.querySelectorAll('button[data-bs-toggle="tab"]').forEach(tabButton => {
+        tabButton.addEventListener('shown.bs.tab', function() {
+            // Update calculations when tab changes
+            updateCalculations();
+        });
+    });
 });
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 @endpush
 @endsection
