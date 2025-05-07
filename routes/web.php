@@ -8,11 +8,18 @@ use App\Http\Controllers\SalesController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\POSController;
 use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\StoreController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
+// Make the store page the default landing page
+Route::get('/', [StoreController::class, 'index'])->name('home');
+
+// Public store routes
+Route::get('/store', [StoreController::class, 'index'])->name('store.index');
+
+Route::get('/welcome', function () {
     return view('welcome');
-});
+})->name('welcome');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
