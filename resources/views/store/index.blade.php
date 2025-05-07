@@ -9,27 +9,12 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="{{ asset('css/bakery.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('css/chatbot.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('css/form-validation.css') }}" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        /* Temporary styles for menu slides until CSS is properly loaded */
-        .menu-slide {
-            display: none;
-        }
-        .menu-slide.active {
-            display: block;
-        }
-        .video-background::after {
-            content:'';
-            position:absolute;
-            top:0;
-            left:0;
-            width:100%;
-            height:100%;
-            background:#00000080;
-        }
-    </style>
+    <!-- CSRF Token for Ajax Requests -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
 <body id="head-contents">
@@ -115,8 +100,8 @@
             </section>
         </main>
 
-                <!-- Product Gallery Section -->
-                <section class="product-gallery py-5 bg-light">
+        <!-- Product Gallery Section -->
+        <section class="product-gallery py-5 bg-light">
             <div class="container">
                 <div class="menu-title text-center mb-4">
                     <h2>Fresh From Our Bakery</h2>
@@ -209,6 +194,7 @@
                     </div>
                 </div>
             </div>
+        </section>
                    
         <!-- Context with text Section -->
         <section id="text-contents">
@@ -234,20 +220,20 @@
                         <div class="card shadow-sm">
                             <div class="card-header bg-primary text-white">
                                 <h3 class="mb-0">Bakery Recommendation Assistant</h3>
-                                <small>Ask me for recommendations based on your preferences!</small>
+                                <small>Ask our AI assistant for personalized drink and pastry recommendations!</small>
                             </div>
                             <div class="card-body">
-                                <div id="chat-container" class="mb-3" style="height: 300px; overflow-y: auto;">
-                                    <div class="chat-message bot-message p-2 mb-2 rounded">
-                                        <p class="mb-0">Hello! I'm your bakery assistant. What kind of pastry or dessert are you in the mood for today?</p>
+                                <div id="chat-container" class="mb-3">
+                                    <div class="chat-message bot-message">
+                                        <p class="mb-0">Hello! I'm your AI bakery assistant powered by GPT-4o. What kind of pastry or drink are you in the mood for today?</p>
                                     </div>
                                 </div>
                                 <div class="input-group">
-                                    <input type="text" id="chat-input" class="form-control" placeholder="Type your message here..." aria-label="Chat input">
-                                    <button class="btn btn-primary" id="send-button">Send</button>
+                                    <input type="text" id="chat-input" class="form-control" placeholder="Type your preferences here..." aria-label="Chat input">
+                                    <button class="btn btn-primary" id="send-button" type="button">Send</button>
                                 </div>
                                 <div class="mt-2 text-muted small">
-                                    <p class="mb-0">Examples: "What's good for someone who likes chocolate?" or "Recommend a light dessert"</p>
+                                    <p class="mb-0">Examples: "I'm in the mood for something with chocolate" or "What pairs well with coffee?"</p>
                                 </div>
                             </div>
                         </div>
@@ -287,189 +273,7 @@
     </div>
     
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAQNDttYP4VgtqJy6Vh0neApggH5jw54lA&callback=initMap" async defer></script>
-    <script>
-        $(document).ready(function() {
-            // Slider functionality for menu sections
-            function showSlide($slides, index) {
-                $slides.removeClass('active').fadeOut(500);
-                $($slides[index]).addClass('active').fadeIn(500);
-            }
-        
-            function initializeSlider(sliderContainer, prevButton, nextButton) {
-                const $slides = $(sliderContainer).find('.menu-slide');
-                let currentIndex = 0;
-                const totalSlides = $slides.length;
-        
-                showSlide($slides, currentIndex);
-        
-                $(nextButton).click(function() {
-                    currentIndex = (currentIndex + 1) % totalSlides;
-                    showSlide($slides, currentIndex);
-                });
-        
-                $(prevButton).click(function() {
-                    currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
-                    showSlide($slides, currentIndex);
-                });
-            }
-            
-            // Initialize sliders for each menu
-            initializeSlider('#menupages .left-container .menu-slider', '#prev-left', '#next-left');
-            initializeSlider('#menupages .middle-container .menu-slider', '#prev-middle', '#next-middle');
-            
-            // Chatbot Functionality
-            const chatInput = document.getElementById('chat-input');
-            const sendButton = document.getElementById('send-button');
-            const chatContainer = document.getElementById('chat-container');
-
-            // Predefined product list for recommendations
-            const products = [
-                { 
-                    name: "Cherry Cheesecake", 
-                    description: "Creamy cheesecake topped with fresh cherry compote",
-                    category: "Signature",
-                    price: 5.99
-                },
-                { 
-                    name: "Chocolate Croissant", 
-                    description: "Buttery croissant filled with rich dark chocolate",
-                    category: "Pastry",
-                    price: 4.25
-                },
-                { 
-                    name: "Berry Pancakes", 
-                    description: "Fluffy pancakes with mixed berry compote and maple syrup",
-                    category: "Breakfast",
-                    price: 8.75
-                },
-                { 
-                    name: "Cappuccino", 
-                    description: "Espresso with steamed milk and perfect foam art",
-                    category: "Drink",
-                    price: 3.50
-                },
-                { 
-                    name: "Chai Tea Latte", 
-                    description: "Spiced tea with steamed milk and aromatic spices",
-                    category: "Drink",
-                    price: 4.00
-                }
-            ];
-
-            // Simple recommendation engine
-            function recommendProduct(message) {
-                const lowercaseMessage = message.toLowerCase();
-
-                // Specific category matching
-                const categoryMatches = {
-                    'drink': products.filter(p => p.category === 'Drink'),
-                    'sweet': products.filter(p => ['Signature', 'Dessert'].includes(p.category)),
-                    'pastry': products.filter(p => p.category === 'Pastry'),
-                    'chocolate': products.filter(p => p.name.toLowerCase().includes('chocolate'))
-                };
-
-                // Keyword matching
-                const keywords = [
-                    { words: ['coffee', 'caffeine'], match: categoryMatches['drink'] },
-                    { words: ['sweet', 'dessert', 'cake'], match: categoryMatches['sweet'] },
-                    { words: ['pastry', 'bread'], match: categoryMatches['pastry'] },
-                    { words: ['chocolate'], match: categoryMatches['chocolate'] }
-                ];
-
-                // Find matching products
-                for (let keyword of keywords) {
-                    if (keyword.words.some(word => lowercaseMessage.includes(word))) {
-                        return keyword.match.length > 0 
-                            ? keyword.match[Math.floor(Math.random() * keyword.match.length)]
-                            : products[Math.floor(Math.random() * products.length)];
-                    }
-                }
-
-                // Default recommendation
-                return products[Math.floor(Math.random() * products.length)];
-            }
-
-            // Send message function
-            function sendMessage() {
-                const message = chatInput.value.trim();
-                
-                if (!message) return;
-
-                // Clear input
-                chatInput.value = '';
-
-                // Add user message
-                addMessageToChat(message, 'user');
-
-                // Get recommendation
-                const recommendation = recommendProduct(message);
-
-                // Generate response
-                const responseMessage = `I recommend our delightful ${recommendation.name}. 
-                ${recommendation.description}. 
-                It's priced at ${recommendation.price} and would be perfect for you!`;
-
-                // Add bot response
-                setTimeout(function() {
-                    addMessageToChat(responseMessage, 'bot');
-                }, 500);
-            }
-
-            // Add message to chat
-            function addMessageToChat(message, sender) {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `chat-message ${sender}-message p-2 mb-2 rounded`;
-                
-                const paragraph = document.createElement('p');
-                paragraph.className = 'mb-0';
-                paragraph.textContent = message;
-                
-                messageDiv.appendChild(paragraph);
-                chatContainer.appendChild(messageDiv);
-                
-                // Auto scroll to bottom
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            }
-
-            // Event listeners
-            if (sendButton) {
-                sendButton.addEventListener('click', sendMessage);
-            }
-
-            if (chatInput) {
-                chatInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        sendMessage();
-                    }
-                });
-            }
-        });
-
-        // Google Map Location API
-        function initMap() {
-            // Coordinates
-            const location = {
-                lat: 11.615726863286849,
-                lng: 104.90259794080816
-            };
-
-            // Create the map instance
-            const map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 15,
-                center: location,
-            });
-
-            // Add a marker at the bakery location
-            const marker = new google.maps.Marker({
-                position: location,
-                map: map,
-                title: "Cresences Bakery",
-                animation: google.maps.Animation.DROP,
-            });
-
-            // Explicitly using the marker to avoid the unused variable warning
-            marker.setMap(map);
-        }
-    </script>
+    <script src="{{ asset('js/bakery.js') }}"></script>
+    <script src="{{ asset('js/chatbot.js') }}"></script>
 </body>
 </html>

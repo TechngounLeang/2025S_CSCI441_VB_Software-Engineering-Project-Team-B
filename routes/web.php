@@ -9,6 +9,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\POSController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\StoreController;
+use App\Http\Controllers\ChatbotController;
 use Illuminate\Support\Facades\Route;
 
 // Make the store page the default landing page
@@ -16,6 +17,9 @@ Route::get('/', [StoreController::class, 'index'])->name('home');
 
 // Public store routes
 Route::get('/store', [StoreController::class, 'index'])->name('store.index');
+
+// Chatbot route
+Route::post('/chatbot/recommendation', [ChatbotController::class, 'getRecommendation'])->name('chatbot.recommendation');
 
 Route::get('/welcome', function () {
     return view('welcome');
@@ -49,6 +53,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('orders', OrderController::class);
         // Add the quick status update route
         Route::patch('/orders/{order}/update-status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
+
+        // Add this route to your routes/web.php file inside the middleware(['auth', 'verified']) group
+        Route::get('/dashboard/export', [App\Http\Controllers\DashboardController::class, 'export'])->name('dashboard.export');
         
         // Register management
         Route::get('registers', [POSController::class, 'registers'])->name('pos.registers');

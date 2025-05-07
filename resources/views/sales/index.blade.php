@@ -45,7 +45,7 @@
                                     <h5>{{ __('app.filter_sales_trend') }}</h5>
                                 </div>
                                 <div class="card-body">
-                                    <form action="{{ route('sales.index') }}" method="GET" class="row">
+                                    <form action="{{ route('sales.index') }}" method="GET" class="row" id="filterForm">
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="chart_start_date">{{ __('app.start_date') }}</label>
@@ -170,7 +170,7 @@
                                     <h5>{{ __('app.export_reports') }}</h5>
                                 </div>
                                 <div class="card-body">
-                                    <form action="{{ route('sales.export') }}" method="GET">
+                                    <form action="{{ route('sales.export') }}" method="GET" id="exportForm">
                                         <div class="form-group mb-3">
                                             <label for="timeframe">{{ __('app.select_timeframe') }}</label>
                                             <select name="timeframe" id="timeframe" class="form-control">
@@ -195,7 +195,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <button type="submit" class="btn btn-primary">{{ __('app.download_csv') }}</button>
+                                        <button type="submit" class="btn btn-primary" id="exportButton">{{ __('app.download_csv') }}</button>
                                     </form>
                                 </div>
                             </div>
@@ -208,3 +208,181 @@
     </div> <!-- row -->
 </div> <!-- container -->
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize charts
+        initializeSalesChart();
+        initializePaymentMethodChart();
+        
+        // Set up timeframe selector
+        document.getElementById('timeframe').addEventListener('change', function() {
+            const customRangeDiv = document.getElementById('customDateRange');
+            if (this.value === 'custom') {
+                customRangeDiv.style.display = 'block';
+            } else {
+                customRangeDiv.style.display = 'none';
+            }
+        });
+        
+        // Set up export button
+        document.getElementById('exportButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            const form = document.getElementById('exportForm');
+            
+            // Make sure we have dates for custom range
+            if (form.timeframe.value === 'custom') {
+                const startDate = form.start_date.value;
+                const endDate = form.end_date.value;
+                
+                if (!startDate || !endDate) {
+                    alert('Please select both start and end dates for custom range');
+                    return;
+                }
+                
+                if (new Date(startDate) > new Date(endDate)) {
+                    alert('Start date must be before end date');
+                    return;
+                }
+            }
+            
+            // Submit the form
+            form.submit();
+        });
+    });
+    
+    function initializeSalesChart() {
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        
+        // Parse data from PHP
+        const dates = @json($dates ?? []);
+        const salesData = @json($salesData ?? []);
+        
+        if (!dates.length || !salesData.length) {
+            // Display a message if no data
+            const noDataMessage = document.createElement('div');
+            noDataMessage.className = 'text-center text-muted py-5';
+            noDataMessage.textContent = 'No sales data available for the selected period';
+            ctx.canvas.parentNode.replaceChild(noDataMessage, ctx.canvas);
+            return;
+        }
+        
+        // Format dates for display
+        const formattedDates = dates.map(date => {
+            const d = new Date(date);
+            return d.toLocaleDateString();
+        });
+        
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: formattedDates,
+                datasets: [{
+                    label: 'Sales ($)',
+                    data: salesData,
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                    borderColor: 'rgba(0, 123, 255, 1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(0, 123, 255, 1)',
+                    pointBorderColor: '#fff',
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                label += '$' + parseFloat(context.raw).toFixed(2);
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    function initializePaymentMethodChart() {
+        const ctx = document.getElementById('paymentMethodChart').getContext('2d');
+        
+        // Parse data from PHP
+        const paymentMethodData = @json($paymentMethodSales ?? []);
+        
+        if (!paymentMethodData.length) {
+            // Display a message if no data
+            const noDataMessage = document.createElement('div');
+            noDataMessage.className = 'text-center text-muted py-5';
+            noDataMessage.textContent = 'No payment method data available for the selected period';
+            ctx.canvas.parentNode.replaceChild(noDataMessage, ctx.canvas);
+            return;
+        }
+        
+        // Prepare data for chart
+        const labels = paymentMethodData.map(item => item.payment_method || 'Unknown');
+        const data = paymentMethodData.map(item => item.total);
+        
+        // Generate nice colors for each payment method
+        const colors = [
+            'rgba(255, 99, 132, 0.8)',
+            'rgba(54, 162, 235, 0.8)',
+            'rgba(255, 206, 86, 0.8)',
+            'rgba(75, 192, 192, 0.8)',
+            'rgba(153, 102, 255, 0.8)',
+            'rgba(255, 159, 64, 0.8)'
+        ];
+        
+        const chart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: colors.slice(0, data.length),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = '$' + parseFloat(context.raw).toFixed(2);
+                                const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((context.raw / total) * 100);
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    },
+                    legend: {
+                        position: 'right',
+                    }
+                }
+            }
+        });
+    }
+</script>
+@endpush

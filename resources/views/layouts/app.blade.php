@@ -12,9 +12,9 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     
-<!-- In the head section or just before closing </body> tag -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     
@@ -169,6 +169,23 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Pass data from PHP to JavaScript for charts if available -->
+    @if(isset($dates) && isset($salesData))
+    <script>
+        // Data for sales chart
+        var salesChartDates = @json($dates);
+        var salesChartData = @json($salesData);
+    </script>
+    @endif
+    
+    @if(isset($paymentLabels) && isset($paymentData))
+    <script>
+        // Data for payment method chart
+        var paymentMethodLabels = @json($paymentLabels);
+        var paymentMethodData = @json($paymentData);
+    </script>
+    @endif
 
     <script>
         // Update current time
