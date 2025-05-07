@@ -15,6 +15,24 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- CSRF Token for Ajax Requests -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <style>
+        /* Temporary styles for menu slides until CSS is properly loaded */
+        .menu-slide {
+            display: none;
+        }
+        .menu-slide.active {
+            display: block;
+        }
+        .video-background::after {
+            content:'';
+            position:absolute;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background:#00000080;
+        }
+    </style>
 </head>
 
 <body id="head-contents">
@@ -272,7 +290,7 @@
         </footer>
     </div>
     
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAQNDttYP4VgtqJy6Vh0neApggH5jw54lA&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap" async defer></script>
     <script src="{{ asset('js/bakery.js') }}"></script>
     <script src="{{ asset('js/chatbot.js') }}"></script>
 </body>
