@@ -15,7 +15,7 @@ class ChatbotController extends Controller
     /**
      * The OpenAI API key
      */
-    protected $apiKey = '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';
+    protected $apiKey = '';
 
     /**
      * The base URL for the OpenAI API
