@@ -92,7 +92,7 @@
                                     <h5>{{ __('app.payment_methods') }}</h5>
                                 </div>
                                 <div class="card-body">
-                                    <canvas id="paymentMethodChart" height="300"></canvas>
+                                    <canvas id="paymentMethodChart" height="300px"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -101,21 +101,17 @@
                         <div class="col-md-6">
                             <div class="card">
                                 <div class="card-header">
-                                    <h5>{{ __('app.trending_items') }}</h5>
+                                    <h5 class="card-title">Trending Items</h5>
                                 </div>
-                                <div class="card-body">
-                                    @if(isset($trendingItems) && count($trendingItems) > 0)
-                                        <ul class="list-group">
-                                            @foreach($trendingItems as $item)
-                                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                    {{ $item->product_name }}
-                                                    <span class="badge bg-primary rounded-pill text-white">{{ $item->quantity_sold }}</span>
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                    @else
-                                        <p class="text-muted">{{ __('app.no_trending_items_data') }}</p>
-                                    @endif
+                                <div class="card-body" style="height: 340px; overflow-y: auto;">
+                                    <ul class="list-group list-group-flush">
+                                        @foreach ($trendingItems->take(5) as $item)
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                {{ $item->product_name }}
+                                                <span class="badge bg-primary rounded-pill">{{ $item->quantity_sold }}</span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
                                 </div>
                             </div>
                         </div>
