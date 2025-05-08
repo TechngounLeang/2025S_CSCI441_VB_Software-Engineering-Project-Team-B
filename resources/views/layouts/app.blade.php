@@ -27,9 +27,12 @@
     <div class="app-wrapper">
         <!-- Sidebar -->
         <nav class="sidebar" id="sidebar">
-            <div class="sidebar-header text-center py-4">
-                <img src="{{ asset('images/logo.jpg') }}" alt="CamboBrew Logo" class="img-fluid sidebar-logo">
-            </div>
+            <!-- Updated sidebar-header section -->
+<div class="sidebar-header text-center py-4">
+    <a href="{{ route('store.index') }}">
+        <img src="{{ asset('images/logo.jpg') }}" alt="CamboBrew Logo" class="img-fluid sidebar-logo">
+    </a>
+</div>
             
             <ul class="nav flex-column sidebar-menu">
                 <li class="nav-item">
