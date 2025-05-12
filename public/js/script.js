@@ -1,3 +1,5 @@
+/* Written & debugged by: Tech Ngoun Leang, Samady Sok, Longwei Ngor
+Tested by: Tech Ngoun Leang */
 $(document).ready(function() {
     $(document).ready(function() {
         // Slider functionality for menu sections

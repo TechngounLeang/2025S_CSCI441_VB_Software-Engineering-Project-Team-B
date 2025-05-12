@@ -1,5 +1,6 @@
 <?php
-
+// Written & debugged by: Tech Ngoun Leang, Samady Sok
+// Tested by: Tech Ngoun Leang
 namespace App\Http\Controllers;
 
 use App\Models\User;

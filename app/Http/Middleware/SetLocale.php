@@ -1,5 +1,6 @@
 <?php
-
+// Written & debugged by: Tech Ngoun Leang & Ratanakvesal Thong
+// Tested by: Tech Ngoun Leang
 // Middleware for Language
 
 namespace App\Http\Middleware;

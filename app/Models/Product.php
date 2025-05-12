@@ -1,5 +1,6 @@
 <?php
-
+// Written & debugged by: Tech Ngoun Leang & Ratanakvesal Thong
+// Tested by: Tech Ngoun Leang
 // app/Models/Product.php
 
 namespace App\Models;
